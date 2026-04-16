@@ -1,6 +1,5 @@
-
 import { state, makePlayer, pushHistory, undoLast, saveState, loadState, WELCOME_KEY } from "./state.js";
-import { activeQuarterKey, totalPlayer, pointsOf, fgm, fga, currentGameSummary, validatePlayerInput } from "./statsEngine.js";
+import { activeQuarterKey, totalPlayer, pointsOf, fgm, fga, currentGameSummary, validatePlayerInput, is3pt } from "./statsEngine.js";
 import { render, toast, setAutosaveStatus } from "./ui.js";
 
 const byId = id => document.getElementById(id);
@@ -54,7 +53,6 @@ function adjustStat(id, stat, delta){
   const q = player.q[activeQuarterKey()];
   if(!q || !(stat in q)) return;
   pushHistory();
-
   if(["p2m","p3m","ftm","reb","ast","tov","stl","blk","fouls"].includes(stat)){
     q[stat] = Math.max(0, q[stat] + delta);
     if(stat === "p2m" && delta > 0) q.p2a += 1;
@@ -103,11 +101,8 @@ function saveGame(){
   };
   state.games.push(game);
   persist();
-  renderHistoryOnly();
+  rerender();
   toast("Game saved.");
-}
-function renderHistoryOnly(){
-  render(adjustStat, removePlayer, copyPlayerSummary, loadGameByReverseIndex, deleteGameByReverseIndex);
 }
 function loadGameByReverseIndex(reverseIndex){
   pushHistory();
@@ -149,7 +144,7 @@ function exportCSV(){
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "courtiq-elite-modular-export.csv";
+  a.download = `CourtIQ_${teamMeta().home}_vs_${teamMeta().away}_${teamMeta().date}.csv`;
   a.click();
   URL.revokeObjectURL(url);
   toast("CSV exported.");
@@ -178,12 +173,12 @@ function openReport(){
     });
   });
   const rows = Array.from(playerMap.values()).sort((a,b)=>b.pts-a.pts);
-  byId("reportSummary").textContent = `${games.length} game(s) included. Local-first season view.`;
+  byId("reportSummary").textContent = `${games.length} game(s) included.`;
   byId("reportTable").innerHTML = rows.length ? `
     <table style="width:100%; border-collapse:collapse">
       <thead><tr>
       <th style="text-align:left; padding:8px; border-bottom:1px solid rgba(255,255,255,.08)">Player</th>
-      <th style="text-align:right; padding:8px; border-bottom:1px solid rgba(255,255,255,.08)">Games</th>
+      <th style="text-align:right; padding:8px; border-bottom:1px solid rgba(255,255,255,.08)">G</th>
       <th style="text-align:right; padding:8px; border-bottom:1px solid rgba(255,255,255,.08)">PTS</th>
       <th style="text-align:right; padding:8px; border-bottom:1px solid rgba(255,255,255,.08)">REB</th>
       <th style="text-align:right; padding:8px; border-bottom:1px solid rgba(255,255,255,.08)">AST</th>
@@ -209,6 +204,8 @@ function undoAction(){
   rerender();
   toast("Last action undone.");
 }
+
+// ── SHOT CHART ──
 function onCourtTap(evt){
   const playerId = Number(byId("shotPlayer").value);
   if(!playerId) { toast("Choose a player first."); return; }
@@ -221,54 +218,184 @@ function onCourtTap(evt){
   const x = Math.max(8, Math.min(392, cursor.x));
   const y = Math.max(8, Math.min(352, cursor.y));
 
-  const p = state.players.find(p=>p.id===playerId);
+  const p = state.players.find(pl=>pl.id===playerId);
   if(!p) return;
   pushHistory();
-  state.shots.push({ playerId, x, y, quarter: activeQuarterKey(), type: state.shotMode });
+
+  // Determine shot type — FT mode always FT; Made/Miss auto-detects 2 vs 3
+  let shotType = state.shotMode; // "made" | "miss" | "ft"
+  let detectedAs = null; // "2pt" | "3pt" | "ft"
+
   const q = p.q[activeQuarterKey()];
-  if(state.shotMode === "made"){ q.p2m += 1; q.p2a += 1; }
-  else if(state.shotMode === "miss"){ q.p2a += 1; }
-  else if(state.shotMode === "three"){ q.p3m += 1; q.p3a += 1; }
-  else if(state.shotMode === "ft"){ q.ftm += 1; q.fta += 1; }
+  if(shotType === "ft"){
+    q.ftm += 1; q.fta += 1;
+    detectedAs = "ft";
+  } else {
+    const three = is3pt(x, y);
+    detectedAs = three ? "3pt" : "2pt";
+    if(shotType === "made"){
+      if(three){ q.p3m += 1; q.p3a += 1; }
+      else     { q.p2m += 1; q.p2a += 1; }
+    } else { // miss
+      if(three){ q.p3a += 1; }
+      else     { q.p2a += 1; }
+    }
+  }
+
+  state.shots.push({ playerId, x, y, quarter: activeQuarterKey(), type: shotType, detectedAs });
+
+  // Toast feedback
+  const label = detectedAs === "ft" ? "FT" : detectedAs === "3pt" ? "3PT" : "2PT";
+  const result = shotType === "miss" ? "miss" : "make";
+  toast(`${p.name} — ${label} ${result}`);
+
   rerender();
 }
+
+// ── SHARE ──
+function getShareUrl(){
+  // Use current location if hosted, otherwise fall back to GitHub Pages URL
+  const loc = window.location.href.split("?")[0].split("#")[0];
+  if(loc.startsWith("file://")) return "https://twilleez.github.io/CourtIQ/";
+  return loc;
+}
+function openShare(){
+  const url = getShareUrl();
+  byId("shareUrlText").textContent = url;
+  byId("shareDialog").showModal();
+}
+
+// ── UPGRADE / PRO ──
+function openUpgrade(){
+  byId("upgradeDialog").showModal();
+}
+function updateProUI(){
+  const proLabel = byId("proLabel");
+  if(state.isPro){
+    proLabel.innerHTML = '<span style="color:var(--gold)">⭐ Pro Active</span>';
+  } else {
+    proLabel.innerHTML = 'Free plan · <a href="#" id="upgradeLink" style="color:var(--accent);text-decoration:none">Upgrade to Pro ⭐</a>';
+    byId("upgradeLink")?.addEventListener("click", e=>{ e.preventDefault(); openUpgrade(); });
+  }
+}
+
 function escapeHtml(str){
   return String(str ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
 }
+
 function wire(){
+  // Mode / quarter / shot type toggles
   qsa("#modeTabs .seg").forEach(btn=>btn.addEventListener("click", ()=>{ state.mode = btn.dataset.mode; rerender(); }));
   qsa("#quarterTabs .qbtn").forEach(btn=>btn.addEventListener("click", ()=>{ state.quarter = btn.dataset.q === "OT" ? "OT" : Number(btn.dataset.q); rerender(); }));
   qsa(".pill[data-shot]").forEach(btn=>btn.addEventListener("click", ()=>{ state.shotMode = btn.dataset.shot; rerender(); }));
 
+  // Player management
   byId("addBtn").addEventListener("click", addPlayer);
   byId("addName").addEventListener("keydown", e=>{ if(e.key==="Enter") addPlayer(); });
+
+  // Header actions
   byId("saveBtn").addEventListener("click", saveGame);
   byId("newBtn").addEventListener("click", newGame);
   byId("undoBtn").addEventListener("click", undoAction);
   byId("csvBtn").addEventListener("click", exportCSV);
   byId("reportBtn").addEventListener("click", openReport);
+  byId("shareBtn").addEventListener("click", openShare);
+  byId("upgradeBtn").addEventListener("click", openUpgrade);
+  byId("toggleModeBtn").addEventListener("click", ()=>{ state.mode = state.mode === "live" ? "advanced" : "live"; rerender(); });
+
+  // Mobile footer
   byId("saveBtnMobile").addEventListener("click", saveGame);
   byId("newBtnMobile").addEventListener("click", newGame);
   byId("undoBtnMobile").addEventListener("click", undoAction);
+  byId("shareBtnMobile").addEventListener("click", openShare);
+
+  // Report dialog
   byId("printReportBtn").addEventListener("click", ()=>window.print());
   byId("closeReportBtn").addEventListener("click", ()=>byId("reportDialog").close());
+
+  // Share dialog
+  byId("closeShareBtn").addEventListener("click", ()=>byId("shareDialog").close());
+  byId("sc-native").addEventListener("click", async ()=>{
+    const url = getShareUrl();
+    if(navigator.share){
+      try{ await navigator.share({ title:"CourtIQ", text:"Free basketball stat tracker for coaches!", url }); }
+      catch(e){ if(e.name !== "AbortError") copyUrl(); }
+    } else { copyUrl(); }
+  });
+  byId("sc-copy").addEventListener("click", copyUrl);
+  byId("copyUrlBtn").addEventListener("click", copyUrl);
+  byId("sc-sms").addEventListener("click", ()=>{
+    const url = getShareUrl();
+    const msg = encodeURIComponent("Check out CourtIQ — free basketball stat tracker: " + url);
+    window.location.href = `sms:?body=${msg}`;
+  });
+  byId("sc-email").addEventListener("click", ()=>{
+    const url = getShareUrl();
+    const sub = encodeURIComponent("CourtIQ — Basketball Stat Tracker");
+    const body = encodeURIComponent(`Hey Coach,\n\nCheck out CourtIQ — a free basketball stat tracker that works on any phone or tablet.\n\n${url}\n\nNo download needed — just open the link and start tracking!`);
+    window.location.href = `mailto:?subject=${sub}&body=${body}`;
+  });
+
+  // Welcome dialog
   byId("startBtn").addEventListener("click", ()=>byId("welcomeDialog").close());
   byId("dismissWelcomeBtn").addEventListener("click", ()=>byId("welcomeDialog").close());
+
+  // Upgrade dialog
+  byId("closeUpgradeBtn").addEventListener("click", ()=>byId("upgradeDialog").close());
+  byId("checkoutBtn").addEventListener("click", ()=>{
+    // Stripe checkout — replace with real link when ready
+    toast("Redirecting to checkout…");
+    setTimeout(()=>{ window.open("https://buy.stripe.com/test_placeholder", "_blank"); }, 600);
+  });
+  byId("activateDemoBtn").addEventListener("click", e=>{
+    e.preventDefault();
+    state.isPro = true;
+    localStorage.setItem("courtiq_pro_demo", "1");
+    byId("upgradeDialog").close();
+    updateProUI();
+    toast("⭐ Pro demo activated!");
+  });
+
+  // Shot chart
   byId("court").addEventListener("click", onCourtTap);
   byId("court").addEventListener("touchend", e=>{ e.preventDefault(); onCourtTap(e); }, {passive:false});
-  byId("toggleModeBtn").addEventListener("click", ()=>{ state.mode = state.mode === "live" ? "advanced" : "live"; rerender(); });
-  byId("shotPlayer").addEventListener("change", persist);
+  byId("shotPlayer").addEventListener("change", ()=>{ rerender(); });
+
+  // Meta inputs
   byId("homeTeam").addEventListener("input", persist);
   byId("awayTeam").addEventListener("input", persist);
   byId("gameDate").addEventListener("input", persist);
+
+  // Upgrade link in header
+  byId("upgradeLink")?.addEventListener("click", e=>{ e.preventDefault(); openUpgrade(); });
+
+  // Close dialogs on backdrop click
+  ["shareDialog","upgradeDialog","reportDialog","welcomeDialog"].forEach(id=>{
+    byId(id).addEventListener("click", e=>{ if(e.target === byId(id)) byId(id).close(); });
+  });
 }
-function persist(){ saveState(teamMeta()); setAutosaveStatus("Autosaved"); clearTimeout(persist._t); persist._t = setTimeout(()=>setAutosaveStatus("Autosave ready"), 900); }
+
+function copyUrl(){
+  const url = getShareUrl();
+  navigator.clipboard.writeText(url)
+    .then(()=>toast("🔗 Link copied!"))
+    .catch(()=>{
+      const ta = document.createElement("textarea");
+      ta.value = url; ta.style.cssText = "position:fixed;opacity:0";
+      document.body.appendChild(ta); ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      toast("🔗 Link copied!");
+    });
+}
+
 function init(){
   byId("gameDate").value = new Date().toISOString().slice(0,10);
   loadState(setMeta);
   seedDefaults();
   wire();
   rerender();
+  updateProUI();
   if(!localStorage.getItem(WELCOME_KEY)){
     byId("welcomeDialog").showModal();
     localStorage.setItem(WELCOME_KEY, "1");
