@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0b1220" />
-  <title>CourtIQ Elite Modular</title>
+  <title>CourtIQ — Basketball Stat Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -17,8 +17,8 @@
         <div class="brand">
           <div class="logo">CIQ</div>
           <div class="brand-copy">
-            <h1>CourtIQ Elite</h1>
-            <p>Modular upgrade pack · faster to maintain and expand</p>
+            <h1>CourtIQ</h1>
+            <p id="proLabel">Free plan · <a href="#" id="upgradeLink" style="color:var(--accent);text-decoration:none">Upgrade to Pro ⭐</a></p>
           </div>
         </div>
 
@@ -29,11 +29,13 @@
         </div>
 
         <div class="actions">
-          <button class="btn btn-success" id="saveBtn">Save Game</button>
+          <button class="btn btn-success" id="saveBtn">💾 Save</button>
           <button class="btn btn-secondary" id="newBtn">New Game</button>
-          <button class="btn btn-secondary" id="undoBtn">Undo</button>
-          <button class="btn btn-secondary" id="csvBtn">Export CSV</button>
-          <button class="btn btn-secondary" id="reportBtn">Season Report</button>
+          <button class="btn btn-secondary" id="undoBtn">↩ Undo</button>
+          <button class="btn btn-secondary" id="csvBtn">CSV</button>
+          <button class="btn btn-secondary" id="reportBtn">📊 Report</button>
+          <button class="btn btn-share" id="shareBtn">🔗 Share</button>
+          <button class="btn btn-upgrade" id="upgradeBtn">⭐ Pro</button>
         </div>
       </div>
 
@@ -68,8 +70,8 @@
       <section class="panel">
         <div class="panel-head">
           <div>
-            <h2>Roster & Live Stats</h2>
-            <p>Cleaner interactions, modular logic, and better future upgrade headroom.</p>
+            <h2>Roster &amp; Live Stats</h2>
+            <p>Tap +/− to track every possession in real time.</p>
           </div>
           <div class="small-actions">
             <button class="btn btn-ghost" id="toggleModeBtn">Toggle Detail Level</button>
@@ -77,12 +79,11 @@
         </div>
         <div class="panel-body">
           <div class="players" id="players"></div>
-
           <div class="add-player">
             <input id="addNum" placeholder="Jersey #">
             <input id="addName" placeholder="Player name">
             <input id="addPhone" placeholder="Phone (optional)" class="wide">
-            <button class="btn btn-primary wide" id="addBtn">Add Player</button>
+            <button class="btn btn-primary wide" id="addBtn">+ Add Player</button>
           </div>
         </div>
       </section>
@@ -92,7 +93,7 @@
           <div class="panel-head">
             <div>
               <h2>Bench Insights</h2>
-              <p>Current game reads plus simple coach nudges.</p>
+              <p>Live coach nudges based on current stats.</p>
             </div>
           </div>
           <div class="panel-body">
@@ -103,17 +104,21 @@
         <section class="panel">
           <div class="panel-head">
             <div>
-              <h2>Shot Chart</h2>
-              <p>Tap the court. Shots sync directly into player stats.</p>
+              <h2>🏀 Shot Chart</h2>
+              <p id="shotSyncNote" class="shot-sync-note">Select a player · clicks auto-update their stats</p>
             </div>
           </div>
           <div class="panel-body">
             <div class="shot-controls">
               <select class="select" id="shotPlayer"></select>
-              <button class="pill made active" data-shot="made">Made 2PT</button>
-              <button class="pill miss" data-shot="miss">Miss 2PT</button>
-              <button class="pill ft" data-shot="three">Made 3PT</button>
-              <button class="pill ft" data-shot="ft">Made FT</button>
+              <button class="pill made active" data-shot="made">✓ MADE</button>
+              <button class="pill miss" data-shot="miss">✗ MISS</button>
+              <button class="pill ft" data-shot="ft">FT MADE</button>
+            </div>
+            <div class="shot-zone-legend">
+              <span class="zone-dot two"></span><span>Inside arc = 2PT</span>
+              <span class="zone-dot three"></span><span>Outside arc = 3PT</span>
+              <span class="zone-dot ft-dot"></span><span>FT mode = 1PT</span>
             </div>
             <div class="court-wrap">
               <svg id="court" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
@@ -124,11 +129,18 @@
                 <rect x="185" y="5" width="30" height="4" fill="#8a6535"/>
                 <circle cx="200" cy="17" r="7" fill="none" stroke="#7a5530" stroke-width="2.5"/>
                 <path d="M 178 17 A 22 22 0 0 1 222 17" fill="none" stroke="#8a6535" stroke-width="1.5"/>
-                <path d="M 28 0 L 28 140 A 174 174 0 0 0 372 140 L 372 0" fill="none" stroke="#8a6535" stroke-width="2.5"/>
+                <!-- 3-point arc line (visual reference) -->
+                <path d="M 28 0 L 28 140 A 174 174 0 0 0 372 140 L 372 0" fill="none" stroke="#fff" stroke-width="2.5" stroke-opacity="0.35"/>
                 <line x1="0" y1="360" x2="400" y2="360" stroke="#8a6535" stroke-width="1" stroke-dasharray="4,4"/>
                 <circle cx="200" cy="360" r="44" fill="none" stroke="#8a6535" stroke-width="1.5" stroke-dasharray="4,4"/>
                 <g id="shotLayer"></g>
               </svg>
+            </div>
+            <div class="shot-stats-row" id="shotStatsRow">
+              <div class="ss-cell"><span id="ss-fg">0%</span><span class="ss-lbl">FG%</span></div>
+              <div class="ss-cell"><span id="ss-2pt">0/0</span><span class="ss-lbl">2PT</span></div>
+              <div class="ss-cell"><span id="ss-3pt">0/0</span><span class="ss-lbl">3PT</span></div>
+              <div class="ss-cell"><span id="ss-ft">0/0</span><span class="ss-lbl">FT</span></div>
             </div>
           </div>
         </section>
@@ -137,7 +149,7 @@
           <div class="panel-head">
             <div>
               <h2>Saved Games</h2>
-              <p>Local-first history and season-level summaries.</p>
+              <p>Local history and season-level summaries.</p>
             </div>
           </div>
           <div class="panel-body">
@@ -148,20 +160,23 @@
     </main>
 
     <div class="footerbar">
-      <button class="btn btn-success" id="saveBtnMobile">Save</button>
+      <button class="btn btn-success" id="saveBtnMobile">💾 Save</button>
       <button class="btn btn-secondary" id="newBtnMobile">New</button>
-      <button class="btn btn-secondary" id="undoBtnMobile">Undo</button>
+      <button class="btn btn-secondary" id="undoBtnMobile">↩ Undo</button>
+      <button class="btn btn-share" id="shareBtnMobile">🔗 Share</button>
     </div>
   </div>
 
+  <!-- ── WELCOME DIALOG ── -->
   <dialog id="welcomeDialog">
     <div class="modal">
-      <h3>Elite modular upgrade</h3>
-      <p>This version separates state, stat logic, and UI rendering so the program is easier to scale.</p>
+      <h3>Welcome to CourtIQ 🏀</h3>
+      <p>The fastest basketball stat tracker for coaches. Works offline, no account needed.</p>
       <ul>
-        <li>Undo support for fast correction on the sideline</li>
-        <li>Autosave status indicator</li>
-        <li>Modular JS architecture for future sync, roles, and backend support</li>
+        <li>Track every player's stats by quarter in real time</li>
+        <li>Click the shot chart — it auto-detects 2PT vs 3PT</li>
+        <li>Undo support for fast sideline corrections</li>
+        <li>Save games and build a season history</li>
       </ul>
       <div class="modal-actions">
         <button class="btn btn-primary" id="startBtn">Start Tracking</button>
@@ -170,14 +185,97 @@
     </div>
   </dialog>
 
+  <!-- ── SEASON REPORT DIALOG ── -->
   <dialog id="reportDialog">
     <div class="modal">
-      <h3>Season Report</h3>
+      <h3>📊 Season Report</h3>
       <p id="reportSummary"></p>
       <div id="reportTable" style="max-height:46vh; overflow:auto; margin-bottom:14px;"></div>
       <div class="modal-actions">
-        <button class="btn btn-primary" id="printReportBtn">Print / Save PDF</button>
+        <button class="btn btn-primary" id="printReportBtn">🖨 Print / Save PDF</button>
         <button class="btn btn-secondary" id="closeReportBtn">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ── SHARE DIALOG ── -->
+  <dialog id="shareDialog">
+    <div class="modal">
+      <h3>🔗 Share CourtIQ</h3>
+      <p>Share this app with your coaching staff, parents, or assistants.</p>
+
+      <div class="share-grid">
+        <button class="share-card primary" id="sc-native">
+          <span class="share-icon">📤</span>
+          <span class="share-label">Share App</span>
+          <span class="share-sub">Messages, AirDrop &amp; more</span>
+        </button>
+        <button class="share-card blue" id="sc-copy">
+          <span class="share-icon">🔗</span>
+          <span class="share-label">Copy Link</span>
+          <span class="share-sub">Paste anywhere</span>
+        </button>
+        <button class="share-card green" id="sc-sms">
+          <span class="share-icon">💬</span>
+          <span class="share-label">Text It</span>
+          <span class="share-sub">Send via SMS</span>
+        </button>
+        <button class="share-card purple" id="sc-email">
+          <span class="share-icon">📧</span>
+          <span class="share-label">Email It</span>
+          <span class="share-sub">Send via email</span>
+        </button>
+      </div>
+
+      <div class="share-url-row">
+        <span class="share-url-text" id="shareUrlText"></span>
+        <button class="btn btn-secondary" id="copyUrlBtn">Copy</button>
+      </div>
+
+      <div class="modal-actions" style="margin-top:16px">
+        <button class="btn btn-secondary" id="closeShareBtn">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ── PRO UPGRADE DIALOG ── -->
+  <dialog id="upgradeDialog">
+    <div class="modal upgrade-modal">
+      <div class="upgrade-hero">
+        <span class="upgrade-crown">⭐</span>
+        <h3>CourtIQ Pro</h3>
+        <p>Unlock the full coaching toolkit. Cancel anytime.</p>
+      </div>
+
+      <ul class="upgrade-feats">
+        <li><span class="feat-icon">📊</span><div><strong>Full Season History</strong><div class="feat-sub">Save, load &amp; compare every game</div></div></li>
+        <li><span class="feat-icon">📈</span><div><strong>Week-Over-Week Trends</strong><div class="feat-sub">Player growth charts across the season</div></div></li>
+        <li><span class="feat-icon">📄</span><div><strong>PDF Season Reports</strong><div class="feat-sub">Professional reports to share with parents</div></div></li>
+        <li><span class="feat-icon">📤</span><div><strong>CSV Exports &amp; SMS Stats</strong><div class="feat-sub">Take data anywhere you need it</div></div></li>
+        <li><span class="feat-icon">🏀</span><div><strong>Up to 5 Teams</strong><div class="feat-sub">Manage varsity, JV, and more</div></div></li>
+      </ul>
+
+      <div class="upgrade-pricing">
+        <div class="price-card" id="plan-month" data-plan="monthly">
+          <div class="price-amount">$9.99</div>
+          <div class="price-period">per month</div>
+          <div class="price-label">MONTHLY</div>
+        </div>
+        <div class="price-card best" id="plan-season" data-plan="season">
+          <div class="price-best-badge">BEST VALUE</div>
+          <div class="price-amount">$24.99</div>
+          <div class="price-period">per season</div>
+          <div class="price-label">SEASON PASS</div>
+        </div>
+      </div>
+
+      <div class="upgrade-cta">
+        <button class="btn btn-upgrade-primary" id="checkoutBtn">⭐ Start Pro — Instant Access</button>
+        <button class="btn btn-secondary" id="closeUpgradeBtn">Maybe later</button>
+        <div class="upgrade-note">✓ Secure checkout via Stripe &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; No hidden fees</div>
+        <div class="upgrade-note" style="margin-top:4px">
+          Testing? <a href="#" id="activateDemoBtn" style="color:var(--gold)">Activate Pro Demo (no payment)</a>
+        </div>
       </div>
     </div>
   </dialog>
