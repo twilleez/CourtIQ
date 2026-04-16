@@ -1,173 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>CourtIQ — Basketball Stat Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="logo">CIQ</div>
+          <div class="brand-copy">
+            <h1>CourtIQ</h1>
+            <p id="proLabel">Free plan · <a href="#" id="upgradeLink" style="color:var(--accent);text-decoration:none">Upgrade to Pro ⭐</a></p>
+          </div>
+        </div>
 
-:root{
-  --bg:#08111f;
-  --panel:#0e1728;
-  --panel-2:#132038;
-  --panel-3:#182744;
-  --border:#25385a;
-  --text:#f5f8ff;
-  --muted:#93a6c7;
-  --dim:#62779b;
-  --accent:#ff7a1a;
-  --accent-2:#ffb36e;
-  --green:#22c55e;
-  --red:#ef4444;
-  --blue:#60a5fa;
-  --gold:#fbbf24;
-  --shadow:0 20px 60px rgba(0,0,0,.35);
-  --radius:22px;
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:"DM Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-  background:
-    radial-gradient(1200px 700px at 20% -10%, rgba(96,165,250,.10), transparent 55%),
-    radial-gradient(900px 600px at 100% 0%, rgba(255,122,26,.10), transparent 45%),
-    linear-gradient(180deg,#08111f,#0a1323 35%,#09111f 100%);
-  overflow:hidden;
-}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.app{height:100%;display:grid;grid-template-rows:auto 1fr auto}
-.topbar{
-  position:sticky; top:0; z-index:20; backdrop-filter:blur(18px);
-  background:linear-gradient(180deg, rgba(8,17,31,.94), rgba(8,17,31,.78));
-  border-bottom:1px solid rgba(255,255,255,.05);
-}
-.topbar-inner{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:14px 16px 10px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{
-  width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
-  background:linear-gradient(135deg,var(--accent),#ff9d4f);color:#1f1200;
-  box-shadow:0 12px 28px rgba(255,122,26,.28);font-weight:900;
-}
-.brand-copy h1{margin:0;font-family:"Barlow Condensed",sans-serif;letter-spacing:1.5px;font-size:30px;line-height:.9}
-.brand-copy p{margin:4px 0 0;color:var(--muted);font-size:13px}
-.meta,.actions,.controls,.segmented,.quarter-strip,.small-actions,.shot-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.field{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:8px 10px}
-.field label{color:var(--muted);font-size:12px;white-space:nowrap}
-.field input,.field select{background:transparent;border:none;outline:none;color:var(--text);min-width:0}
-.btn{
-  border:none;border-radius:14px;padding:11px 14px;min-height:42px;font-weight:700;
-  letter-spacing:.2px;transition:transform .12s ease, opacity .12s ease, background .2s ease;
-}
-.btn:active{transform:scale(.98)}
-.btn-primary{background:var(--accent);color:white}
-.btn-secondary{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.07)}
-.btn-success{background:var(--green);color:white}
-.btn-danger{background:rgba(239,68,68,.16);color:#fecaca;border:1px solid rgba(239,68,68,.25)}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.08)}
-.controls{padding:0 16px 14px;justify-content:space-between}
-.seg,.qbtn,.pill{
-  border:none;border-radius:999px;padding:9px 14px;background:rgba(255,255,255,.06);
-  color:var(--muted);font-weight:800;letter-spacing:.3px;
-}
-.seg.active,.qbtn.active{background:white;color:#0b1220}
-.qbtn[data-q="1"].active{background:#60a5fa}
-.qbtn[data-q="2"].active{background:#a78bfa}
-.qbtn[data-q="3"].active{background:var(--accent)}
-.qbtn[data-q="4"].active{background:#22c55e}
-.qbtn[data-q="OT"].active{background:#f87171}
-.pill.active{background:white;color:#0b1220}
-.pill.made.active{background:rgba(34,197,94,.95)}
-.pill.miss.active{background:rgba(239,68,68,.92)}
-.pill.ft.active{background:rgba(96,165,250,.95)}
-.status-chip{
-  padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
-  color:var(--muted);font-size:12px
-}
-.summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:0 16px 14px}
-.kpi{
-  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-  border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:12px 14px;box-shadow:var(--shadow)
-}
-.kpi .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1.2px}
-.kpi .value{margin-top:6px;font-family:"Barlow Condensed",sans-serif;font-size:32px;line-height:.95}
-.main{min-height:0;display:grid;grid-template-columns:1.35fr .95fr;gap:16px;padding:0 16px 16px;overflow:hidden}
-.panel{
-  min-height:0;background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.025));
-  border:1px solid rgba(255,255,255,.07);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;
-}
-.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px;border-bottom:1px solid rgba(255,255,255,.06)}
-.panel-head h2{margin:0;font-family:"Barlow Condensed",sans-serif;letter-spacing:1px;font-size:24px}
-.panel-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
-.panel-body{min-height:0;height:calc(100% - 82px);overflow:auto;padding:16px}
-.players,.insights,.history{display:grid;gap:12px}
-.player-card,.insight,.history-card{
-  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.03));
-  border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:14px;
-}
-.player-top,.history-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
-.player-id{display:flex;align-items:center;gap:10px}
-.badge{
-  min-width:42px;height:42px;border-radius:14px;display:grid;place-items:center;
-  background:rgba(255,122,26,.14);border:1px solid rgba(255,122,26,.25);color:var(--accent-2);
-  font-family:"Barlow Condensed",sans-serif;font-size:24px;font-weight:900;
-}
-.player-name{font-weight:800;font-size:18px}
-.player-sub,.history-meta,.insight span,.empty{color:var(--muted);font-size:12px}
-.points{text-align:right}
-.points .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1.1px}
-.points .value{font-family:"Barlow Condensed",sans-serif;font-size:44px;line-height:.85;color:var(--accent)}
-.live-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.stat-tile,.mini{
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:10px;
-}
-.stat-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.stat-name{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.9px}
-.stat-val{font-family:"Barlow Condensed",sans-serif;font-size:26px}
-.stepper{display:grid;grid-template-columns:42px 1fr 42px;gap:8px;align-items:center}
-.stepper button{border:none;border-radius:12px;height:40px;font-size:22px;color:white;background:var(--panel-3)}
-.stepper .minus{background:rgba(239,68,68,.18); color:#fecaca}
-.stepper .plus{background:rgba(34,197,94,.18); color:#bbf7d0}
-.stepper .display{text-align:center;font-weight:900;font-size:22px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:8px 0}
-.advanced-grid{margin-top:12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.mini h4{margin:0 0 8px;color:var(--muted);font-size:11px;letter-spacing:1px;text-transform:uppercase}
-.add-player{display:grid;grid-template-columns:90px 1.2fr 1fr auto;gap:10px;margin-top:12px}
-.add-player input,.select{
-  background:rgba(255,255,255,.05);color:var(--text);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px 12px;outline:none;
-}
-.side-stack{display:grid;grid-template-rows:auto auto 1fr;gap:16px;min-height:0}
-.insight strong{display:block;margin-bottom:4px}
-.court-wrap{background:#c69966;border-radius:22px;overflow:hidden;border:3px solid rgba(255,255,255,.09)}
-#court{display:block;width:100%;height:auto;background:#c69966;touch-action:none}
-.footerbar{display:none}
-.toast{
-  position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(10px);
-  padding:12px 16px; border-radius:16px; background:rgba(12,18,31,.92); color:var(--text);
-  border:1px solid rgba(255,255,255,.08); box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:.2s ease; z-index:50;
-}
-.toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
-.empty{padding:18px;border:1px dashed rgba(255,255,255,.12);border-radius:18px;text-align:center}
-dialog{
-  border:none;border-radius:24px;max-width:560px;width:min(560px, calc(100vw - 24px));padding:0;background:#0d1728;color:var(--text);box-shadow:var(--shadow);
-}
-dialog::backdrop{background:rgba(0,0,0,.58)}
-.modal{padding:22px}
-.modal h3{margin:0 0 8px;font-family:"Barlow Condensed",sans-serif;font-size:28px;letter-spacing:1px}
-.modal p{margin:0 0 14px;color:var(--muted)}
-.modal ul{margin:0 0 18px 18px}
-.modal li{margin:8px 0}
-.modal-actions{display:flex;gap:10px;flex-wrap:wrap}
-@media (max-width:1180px){
-  .summary{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .main{grid-template-columns:1fr}
-}
-@media (max-width:760px){
-  body{overflow:auto}
-  .app{height:auto;min-height:100%}
-  .summary{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .live-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .advanced-grid{grid-template-columns:1fr}
-  .add-player{grid-template-columns:1fr 1fr}
-  .add-player .wide{grid-column:span 2}
-  .topbar-inner,.controls,.summary,.main{padding-left:12px;padding-right:12px}
-  .footerbar{
-    display:flex; position:sticky; bottom:0; z-index:30; background:rgba(8,17,31,.92); backdrop-filter:blur(18px);
-    border-top:1px solid rgba(255,255,255,.07); padding:10px 12px env(safe-area-inset-bottom); gap:8px;
-  }
-  .footerbar .btn{flex:1}
-}
+        <div class="meta">
+          <div class="field"><label>Home</label><input id="homeTeam" value="HOME" maxlength="14"></div>
+          <div class="field"><label>Away</label><input id="awayTeam" value="AWAY" maxlength="14"></div>
+          <div class="field"><label>Date</label><input id="gameDate" type="date"></div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-success" id="saveBtn">💾 Save</button>
+          <button class="btn btn-secondary" id="newBtn">New Game</button>
+          <button class="btn btn-secondary" id="undoBtn">↩ Undo</button>
+          <button class="btn btn-secondary" id="csvBtn">CSV</button>
+          <button class="btn btn-secondary" id="reportBtn">📊 Report</button>
+          <button class="btn btn-share" id="shareBtn">🔗 Share</button>
+          <button class="btn btn-upgrade" id="upgradeBtn">⭐ Pro</button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="segmented" id="modeTabs">
+          <button class="seg active" data-mode="live">Live Mode</button>
+          <button class="seg" data-mode="advanced">Advanced Mode</button>
+        </div>
+
+        <div class="quarter-strip" id="quarterTabs">
+          <button class="qbtn active" data-q="1">Q1</button>
+          <button class="qbtn" data-q="2">Q2</button>
+          <button class="qbtn" data-q="3">Q3</button>
+          <button class="qbtn" data-q="4">Q4</button>
+          <button class="qbtn" data-q="OT">OT</button>
+        </div>
+
+        <div class="status-chip" id="autosaveStatus">Autosave ready</div>
+      </div>
+
+      <section class="summary">
+        <div class="kpi"><div class="label">Team Points</div><div class="value" id="teamPts">0</div></div>
+        <div class="kpi"><div class="label">Rebounds</div><div class="value" id="teamReb">0</div></div>
+        <div class="kpi"><div class="label">Assists</div><div class="value" id="teamAst">0</div></div>
+        <div class="kpi"><div class="label">Turnovers</div><div class="value" id="teamTov">0</div></div>
+        <div class="kpi"><div class="label">FG%</div><div class="value" id="teamFg">0%</div></div>
+        <div class="kpi"><div class="label">3PT%</div><div class="value" id="team3p">0%</div></div>
+      </section>
+    </header>
+
+    <main class="main">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Roster &amp; Live Stats</h2>
+            <p>Tap +/− to track every possession in real time.</p>
+          </div>
+          <div class="small-actions">
+            <button class="btn btn-ghost" id="toggleModeBtn">Toggle Detail Level</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="players" id="players"></div>
+          <div class="add-player">
+            <input id="addNum" placeholder="Jersey #">
+            <input id="addName" placeholder="Player name">
+            <input id="addPhone" placeholder="Phone (optional)" class="wide">
+            <button class="btn btn-primary wide" id="addBtn">+ Add Player</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="side-stack">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Bench Insights</h2>
+              <p>Live coach nudges based on current stats.</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="insights" id="insights"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>🏀 Shot Chart</h2>
+              <p id="shotSyncNote" class="shot-sync-note">Select a player · clicks auto-update their stats</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="shot-controls">
+              <select class="select" id="shotPlayer"></select>
+              <button class="pill made active" data-shot="made">✓ MADE</button>
+              <button class="pill miss" data-shot="miss">✗ MISS</button>
+              <button class="pill ft" data-shot="ft">FT MADE</button>
+            </div>
+            <div class="shot-zone-legend">
+              <span class="zone-dot two"></span><span>Inside arc = 2PT</span>
+              <span class="zone-dot three"></span><span>Outside arc = 3PT</span>
+              <span class="zone-dot ft-dot"></span><span>FT mode = 1PT</span>
+            </div>
+            <div class="court-wrap">
+              <svg id="court" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="360" fill="#c69966"/>
+                <rect x="140" y="0" width="120" height="140" fill="#b18354" stroke="#8a6535" stroke-width="2"/>
+                <rect x="150" y="0" width="100" height="110" fill="none" stroke="#8a6535" stroke-width="2"/>
+                <circle cx="200" cy="110" r="55" fill="none" stroke="#8a6535" stroke-width="2"/>
+                <rect x="185" y="5" width="30" height="4" fill="#8a6535"/>
+                <circle cx="200" cy="17" r="7" fill="none" stroke="#7a5530" stroke-width="2.5"/>
+                <path d="M 178 17 A 22 22 0 0 1 222 17" fill="none" stroke="#8a6535" stroke-width="1.5"/>
+                <!-- 3-point arc line (visual reference) -->
+                <path d="M 28 0 L 28 140 A 174 174 0 0 0 372 140 L 372 0" fill="none" stroke="#fff" stroke-width="2.5" stroke-opacity="0.35"/>
+                <line x1="0" y1="360" x2="400" y2="360" stroke="#8a6535" stroke-width="1" stroke-dasharray="4,4"/>
+                <circle cx="200" cy="360" r="44" fill="none" stroke="#8a6535" stroke-width="1.5" stroke-dasharray="4,4"/>
+                <g id="shotLayer"></g>
+              </svg>
+            </div>
+            <div class="shot-stats-row" id="shotStatsRow">
+              <div class="ss-cell"><span id="ss-fg">0%</span><span class="ss-lbl">FG%</span></div>
+              <div class="ss-cell"><span id="ss-2pt">0/0</span><span class="ss-lbl">2PT</span></div>
+              <div class="ss-cell"><span id="ss-3pt">0/0</span><span class="ss-lbl">3PT</span></div>
+              <div class="ss-cell"><span id="ss-ft">0/0</span><span class="ss-lbl">FT</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Saved Games</h2>
+              <p>Local history and season-level summaries.</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="history" id="history"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div class="footerbar">
+      <button class="btn btn-success" id="saveBtnMobile">💾 Save</button>
+      <button class="btn btn-secondary" id="newBtnMobile">New</button>
+      <button class="btn btn-secondary" id="undoBtnMobile">↩ Undo</button>
+      <button class="btn btn-share" id="shareBtnMobile">🔗 Share</button>
+    </div>
+  </div>
+
+  <!-- ── WELCOME DIALOG ── -->
+  <dialog id="welcomeDialog">
+    <div class="modal">
+      <h3>Welcome to CourtIQ 🏀</h3>
+      <p>The fastest basketball stat tracker for coaches. Works offline, no account needed.</p>
+      <ul>
+        <li>Track every player's stats by quarter in real time</li>
+        <li>Click the shot chart — it auto-detects 2PT vs 3PT</li>
+        <li>Undo support for fast sideline corrections</li>
+        <li>Save games and build a season history</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="startBtn">Start Tracking</button>
+        <button class="btn btn-secondary" id="dismissWelcomeBtn">Skip</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ── SEASON REPORT DIALOG ── -->
+  <dialog id="reportDialog">
+    <div class="modal">
+      <h3>📊 Season Report</h3>
+      <p id="reportSummary"></p>
+      <div id="reportTable" style="max-height:46vh; overflow:auto; margin-bottom:14px;"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="printReportBtn">🖨 Print / Save PDF</button>
+        <button class="btn btn-secondary" id="closeReportBtn">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ── SHARE DIALOG ── -->
+  <dialog id="shareDialog">
+    <div class="modal">
+      <h3>🔗 Share CourtIQ</h3>
+      <p>Share this app with your coaching staff, parents, or assistants.</p>
+
+      <div class="share-grid">
+        <button class="share-card primary" id="sc-native">
+          <span class="share-icon">📤</span>
+          <span class="share-label">Share App</span>
+          <span class="share-sub">Messages, AirDrop &amp; more</span>
+        </button>
+        <button class="share-card blue" id="sc-copy">
+          <span class="share-icon">🔗</span>
+          <span class="share-label">Copy Link</span>
+          <span class="share-sub">Paste anywhere</span>
+        </button>
+        <button class="share-card green" id="sc-sms">
+          <span class="share-icon">💬</span>
+          <span class="share-label">Text It</span>
+          <span class="share-sub">Send via SMS</span>
+        </button>
+        <button class="share-card purple" id="sc-email">
+          <span class="share-icon">📧</span>
+          <span class="share-label">Email It</span>
+          <span class="share-sub">Send via email</span>
+        </button>
+      </div>
+
+      <div class="share-url-row">
+        <span class="share-url-text" id="shareUrlText"></span>
+        <button class="btn btn-secondary" id="copyUrlBtn">Copy</button>
+      </div>
+
+      <div class="modal-actions" style="margin-top:16px">
+        <button class="btn btn-secondary" id="closeShareBtn">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ── PRO UPGRADE DIALOG ── -->
+  <dialog id="upgradeDialog">
+    <div class="modal upgrade-modal">
+      <div class="upgrade-hero">
+        <span class="upgrade-crown">⭐</span>
+        <h3>CourtIQ Pro</h3>
+        <p>Unlock the full coaching toolkit. Cancel anytime.</p>
+      </div>
+
+      <ul class="upgrade-feats">
+        <li><span class="feat-icon">📊</span><div><strong>Full Season History</strong><div class="feat-sub">Save, load &amp; compare every game</div></div></li>
+        <li><span class="feat-icon">📈</span><div><strong>Week-Over-Week Trends</strong><div class="feat-sub">Player growth charts across the season</div></div></li>
+        <li><span class="feat-icon">📄</span><div><strong>PDF Season Reports</strong><div class="feat-sub">Professional reports to share with parents</div></div></li>
+        <li><span class="feat-icon">📤</span><div><strong>CSV Exports &amp; SMS Stats</strong><div class="feat-sub">Take data anywhere you need it</div></div></li>
+        <li><span class="feat-icon">🏀</span><div><strong>Up to 5 Teams</strong><div class="feat-sub">Manage varsity, JV, and more</div></div></li>
+      </ul>
+
+      <div class="upgrade-pricing">
+        <div class="price-card" id="plan-month" data-plan="monthly">
+          <div class="price-amount">$9.99</div>
+          <div class="price-period">per month</div>
+          <div class="price-label">MONTHLY</div>
+        </div>
+        <div class="price-card best" id="plan-season" data-plan="season">
+          <div class="price-best-badge">BEST VALUE</div>
+          <div class="price-amount">$24.99</div>
+          <div class="price-period">per season</div>
+          <div class="price-label">SEASON PASS</div>
+        </div>
+      </div>
+
+      <div class="upgrade-cta">
+        <button class="btn btn-upgrade-primary" id="checkoutBtn">⭐ Start Pro — Instant Access</button>
+        <button class="btn btn-secondary" id="closeUpgradeBtn">Maybe later</button>
+        <div class="upgrade-note">✓ Secure checkout via Stripe &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; No hidden fees</div>
+        <div class="upgrade-note" style="margin-top:4px">
+          Testing? <a href="#" id="activateDemoBtn" style="color:var(--gold)">Activate Pro Demo (no payment)</a>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
