@@ -1,4 +1,3 @@
-
 import { state, eq } from "./state.js";
 
 export function activeQuarterKey(){
@@ -66,4 +65,15 @@ export function benchInsights(){
   if(risky && risky.total.tov >= 3) insights.push({title:"Protect the ball", body:`${risky.player.name} has ${risky.total.tov} turnovers. Settle the pace.`});
   if(!insights.length) insights.push({title:"Game is live", body:"Log a few possessions and the bench reads will update automatically."});
   return insights;
+}
+
+/**
+ * Determine if a shot coordinate (in SVG 400×360 space) is a 3-pointer.
+ * The 3-point arc: center basket at (200, 17), radius ~174.
+ * Corner 3s: x < 28 or x > 372 within y < 140.
+ */
+export function is3pt(x, y){
+  if((x < 28 || x > 372) && y < 140) return true;
+  const dx = x - 200, dy = y - 17;
+  return Math.sqrt(dx*dx + dy*dy) > 174;
 }
