@@ -1,1563 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="CourtIQ — Basketball stat tracker for coaches">
-<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22CourtIQ%22%2C%22short_name%22%3A%22CourtIQ%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23080d18%22%2C%22theme_color%22%3A%22%23FF6B00%22%7D">
-<title>CourtIQ — Basketball Stat Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#080d18;--card:#0f1826;--card2:#162032;--border:#1c2d42;
-  --accent:#FF6B00;--blue:#2979FF;--green:#00C853;--red:#FF3B30;
-  --yellow:#FFD60A;--purple:#BF5AF2;--cyan:#32ADE6;
-  --text:#F0F4FF;--sub:#7A8BA8;--dim:#3A4A60;
-  --q1:#2979FF;--q2:#BF5AF2;--q3:#FF6B00;--q4:#00C853;
-  --gold:#FFD700;
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,'Barlow Condensed',sans-serif;display:flex;flex-direction:column;}
-
-/* ── HEADER ── */
-.hdr{background:linear-gradient(180deg,#0c1628,#0f1826);border-bottom:2px solid var(--accent);padding:8px 12px 6px;flex-shrink:0;}
-.hdr-top{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap;}
-.logo{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;white-space:nowrap;flex-shrink:0;}
-.logo em{color:var(--accent);font-style:normal;}
-.pro-badge{background:linear-gradient(135deg,var(--gold),#FFA500);color:#1a0e00;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:900;letter-spacing:2px;padding:2px 7px;border-radius:6px;margin-left:4px;vertical-align:middle;}
-.game-meta{display:flex;align-items:center;gap:5px;flex:1;justify-content:center;}
-.game-meta input{background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;padding:5px 8px;border-radius:8px;text-align:center;}
-.gm-team{width:86px;}.gm-date{width:124px;font-size:11px;font-family:'DM Mono',monospace;}
-.gm-vs{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;color:var(--sub);letter-spacing:2px;}
-.hdr-btns{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;}
-.hbtn{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:1px;padding:6px 10px;border-radius:9px;border:none;cursor:pointer;min-height:34px;display:flex;align-items:center;gap:3px;-webkit-user-select:none;user-select:none;transition:opacity .15s,transform .1s;white-space:nowrap;}
-.hbtn:active{transform:scale(.91);opacity:.75;}
-.hbtn.sv{background:var(--green);color:#fff;}
-.hbtn.hi{background:var(--card2);border:1px solid var(--border);color:var(--text);}
-.hbtn.nw{background:var(--blue);color:#fff;}
-.hbtn.ex{background:rgba(191,90,242,.15);border:1px solid rgba(191,90,242,.3);color:var(--purple);}
-.hbtn.rpt{background:rgba(255,215,0,.15);border:1px solid rgba(255,215,0,.35);color:var(--gold);}
-.hbtn.upgrade{background:linear-gradient(135deg,var(--gold),#FFA500);color:#1a0e00;font-weight:900;}
-
-/* ── QUARTER BAR ── */
-.q-bar{display:flex;gap:4px;align-items:center;}
-.q-btn{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:1px;padding:5px 0;border-radius:9px;border:2px solid var(--border);background:var(--card2);color:var(--sub);cursor:pointer;min-height:34px;flex:1;text-align:center;-webkit-user-select:none;user-select:none;transition:all .15s;}
-.q-btn:active{transform:scale(.91);}
-.q-btn.on{color:#060c18!important;border-color:transparent!important;}
-.q-btn[data-q="1"].on{background:var(--q1);}.q-btn[data-q="2"].on{background:var(--q2);}
-.q-btn[data-q="3"].on{background:var(--q3);}.q-btn[data-q="4"].on{background:var(--q4);}
-.q-btn[data-q="OT"].on{background:var(--red);}
-.q-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);white-space:nowrap;padding-left:4px;}
-
-/* ── TEAM TOTALS ── */
-.totals-strip{background:var(--card);border-bottom:1px solid var(--border);padding:5px 12px;display:flex;gap:5px;flex-wrap:wrap;align-items:center;flex-shrink:0;}
-.ts-lbl{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--accent);margin-right:2px;}
-.ts-pill{background:var(--card2);border:1px solid var(--border);border-radius:18px;padding:3px 8px;display:flex;align-items:center;gap:4px;}
-.ts-l{font-family:'DM Mono',monospace;font-size:8px;color:var(--sub);text-transform:uppercase;}
-.ts-v{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;}
-
-/* ── BODY ── */
-.body-wrap{flex:1;display:flex;overflow:hidden;min-height:0;}
-.table-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
-.col-header{display:flex;background:var(--card);border-bottom:2px solid var(--border);flex-shrink:0;overflow-x:hidden;min-width:0;}
-.col-header-inner{display:flex;min-width:max-content;}
-.rows-scroll{flex:1;overflow-y:scroll;overflow-x:scroll;scrollbar-width:auto;scrollbar-color:var(--accent) var(--card2);}
-.rows-scroll::-webkit-scrollbar{width:12px;height:12px;}
-.rows-scroll::-webkit-scrollbar-track{background:var(--card2);}
-.rows-scroll::-webkit-scrollbar-thumb{background:var(--accent);border-radius:6px;border:2px solid var(--card2);}
-.rows-scroll::-webkit-scrollbar-corner{background:var(--card2);}
-.rows-inner{min-width:max-content;}
-.col-player{width:150px;flex-shrink:0;}
-.col-pts{width:72px;flex-shrink:0;}
-.col-shoot{width:136px;flex-shrink:0;}
-.col-single{width:104px;flex-shrink:0;}
-.col-acts{width:84px;flex-shrink:0;}
-.ch{padding:6px 4px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);text-align:center;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;}
-.ch.left{justify-content:flex-start;text-align:left;padding-left:12px;flex-direction:row;}
-.ch-main{font-size:12px;font-weight:900;}
-.ch-sub{font-size:8px;color:var(--dim);letter-spacing:1px;}
-.prow{display:flex;align-items:stretch;border-bottom:1px solid var(--border);min-height:88px;}
-.prow:nth-child(even){background:rgba(255,255,255,.013);}
-.cell-player{width:150px;flex-shrink:0;padding:8px 8px 8px 12px;display:flex;align-items:center;gap:8px;border-right:1px solid var(--border);}
-.p-num{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--accent);min-width:26px;text-align:center;line-height:1;}
-.p-info{display:flex;flex-direction:column;gap:3px;}
-.p-name{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;line-height:1.1;}
-.p-sub{font-family:'DM Mono',monospace;font-size:8px;line-height:1;}
-.cell-pts{width:72px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-right:1px solid var(--border);padding:4px;}
-.pts-big{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;line-height:1;color:var(--accent);}
-.pts-lbl{font-family:'DM Mono',monospace;font-size:7px;color:var(--sub);text-transform:uppercase;}
-.pts-flash{animation:flash-pts .3s ease-out;}
-@keyframes flash-pts{0%{transform:scale(1.35);color:#fff;}100%{transform:scale(1);color:var(--accent);}}
-.cell-shoot{flex-shrink:0;padding:5px 6px;display:flex;flex-direction:column;gap:3px;justify-content:center;border-right:1px solid var(--border);width:136px;}
-.cell-single{width:104px;flex-shrink:0;padding:5px 6px;display:flex;flex-direction:column;gap:3px;justify-content:center;border-right:1px solid var(--border);}
-.stepper{display:flex;align-items:center;border-radius:10px;border:1px solid var(--border);overflow:hidden;height:32px;background:var(--card2);}
-.step-btn{width:36px;height:32px;min-width:36px;background:transparent;border:none;color:var(--text);font-size:22px;line-height:1;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-user-select:none;user-select:none;transition:background .1s;}
-.step-btn.minus:active{background:rgba(255,59,48,.45);}
-.step-btn.plus:active{background:rgba(0,200,83,.45);}
-.step-val{flex:1;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;line-height:1;pointer-events:none;min-width:28px;}
-.step-info{font-family:'DM Mono',monospace;font-size:8px;color:var(--sub);text-align:center;line-height:1.3;}
-.step-info b{color:var(--text);font-weight:600;}
-.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:8px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--sub);text-align:center;}
-.s-2pt{border-color:rgba(96,165,250,.4);}.s-3pt{border-color:rgba(255,107,0,.4);}.s-miss{border-color:rgba(255,59,48,.3);}
-.s-ft{border-color:rgba(191,90,242,.4);}.s-ftx{border-color:rgba(191,90,242,.25);}.s-reb{border-color:rgba(41,121,255,.4);}
-.s-ast{border-color:rgba(0,200,83,.4);}.s-tov{border-color:rgba(255,59,48,.4);}.s-stl{border-color:rgba(50,173,230,.4);}
-.s-blk{border-color:rgba(191,90,242,.4);}.s-foul{border-color:rgba(255,214,10,.4);}
-.c-2pt{color:#60a5fa;}.c-3pt{color:var(--accent);}.c-ft{color:var(--purple);}.c-miss{color:var(--red);}
-.c-reb{color:var(--blue);}.c-ast{color:var(--green);}.c-tov{color:var(--red);}.c-stl{color:var(--cyan);}.c-blk{color:var(--purple);}.c-foul{color:var(--yellow);}
-.cell-acts{width:84px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:4px 6px;}
-
-/* ── PLAYER TOTALS BAR ── */
-.ptotals-bar{display:flex;align-items:center;background:rgba(255,107,0,.06);border-top:1px solid rgba(255,107,0,.2);border-bottom:2px solid rgba(255,107,0,.3);padding:5px 12px 5px 12px;gap:0;min-width:max-content;flex-shrink:0;}
-.ptb-name{width:150px;flex-shrink:0;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--accent);text-transform:uppercase;padding-left:0;}
-.ptb-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 4px;border-right:1px solid var(--border);}
-.ptb-cell:last-child{border-right:none;}
-.ptb-v{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;line-height:1;}
-.ptb-l{font-family:'DM Mono',monospace;font-size:7px;color:var(--sub);text-transform:uppercase;margin-top:1px;}
-.ptb-pts{width:72px;}.ptb-2pt{width:68px;}.ptb-3pt{width:68px;}.ptb-ft{width:68px;}.ptb-stat{width:52px;}
-.ptb-sep{width:1px;background:var(--border);align-self:stretch;margin:0 2px;}
-
-/* Shot-links-stats indicator */
-.shot-link-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);border-radius:6px;padding:2px 6px;font-family:'DM Mono',monospace;font-size:8px;color:var(--green);margin-left:6px;}
-
-.act-btn{background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--sub);font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:1px;cursor:pointer;padding:6px 8px;min-height:30px;width:100%;display:flex;align-items:center;justify-content:center;gap:3px;-webkit-user-select:none;user-select:none;transition:all .12s;white-space:nowrap;}
-.act-btn:active{transform:scale(.88);}
-.act-btn.sms{border-color:rgba(0,200,83,.4);color:var(--green);}
-.act-btn.del{border-color:rgba(255,59,48,.3);color:var(--red);}
-.act-btn.rpt{border-color:rgba(255,215,0,.3);color:var(--gold);}
-
-/* ── ADD PLAYER ── */
-.add-bar{background:var(--card);border-top:2px solid var(--border);padding:8px 12px;display:flex;gap:5px;align-items:center;flex-shrink:0;flex-wrap:wrap;}
-.add-bar input{background:var(--card2);border:1px solid var(--border);color:var(--text);font-size:13px;padding:9px 10px;border-radius:10px;-webkit-appearance:none;}
-.add-bar input:focus{outline:none;border-color:var(--blue);}
-#np-n{width:44px;text-align:center;}#np-ph{width:110px;}#np-nm{flex:1;min-width:80px;}
-.add-submit{background:var(--accent);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:1px;padding:9px 14px;border-radius:10px;border:none;cursor:pointer;min-height:42px;white-space:nowrap;-webkit-user-select:none;user-select:none;transition:opacity .15s,transform .1s;}
-.add-submit:active{transform:scale(.92);opacity:.8;}
-
-/* ── SHOT PANEL ── */
-.shot-panel{width:268px;flex-shrink:0;background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
-.sp-hdr{padding:9px 11px 5px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.sp-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:2px;}
-.sp-sel{background:var(--card2);border:1px solid var(--border);color:var(--text);font-size:10px;padding:4px 6px;border-radius:7px;cursor:pointer;}
-.stg{display:flex;gap:3px;padding:0 9px 5px;flex-shrink:0;}
-.stb{flex:1;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;padding:6px 3px;border-radius:9px;border:2px solid var(--border);background:var(--card2);color:var(--sub);cursor:pointer;text-align:center;transition:all .15s;min-height:36px;-webkit-user-select:none;user-select:none;}
-.stb:active{transform:scale(.91);}
-.stb.on.made{background:rgba(0,200,83,.2);border-color:var(--green);color:var(--green);}
-.stb.on.miss{background:rgba(255,59,48,.2);border-color:var(--red);color:var(--red);}
-.stb.on.ft{background:rgba(191,90,242,.2);border-color:var(--purple);color:var(--purple);}
-.leg-row{display:flex;gap:6px;padding:0 9px 4px;flex-wrap:wrap;flex-shrink:0;}
-.leg{display:flex;align-items:center;gap:3px;font-family:'DM Mono',monospace;font-size:8px;color:var(--sub);}
-.ld{width:7px;height:7px;border-radius:50%;border:2px solid;}
-.ld.made{background:rgba(0,200,83,.25);border-color:var(--green);}
-.ld.miss{background:rgba(255,59,48,.25);border-color:var(--red);}
-.ld.ft{background:rgba(191,90,242,.25);border-color:var(--purple);}
-.cw{padding:0 8px 4px;flex-shrink:0;}
-#court{width:100%;cursor:crosshair;touch-action:none;user-select:none;border-radius:8px;display:block;}
-.ss-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:0 8px 6px;flex-shrink:0;}
-.ss{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:5px;text-align:center;}
-.ss-l{font-family:'DM Mono',monospace;font-size:8px;color:var(--sub);text-transform:uppercase;}
-.ss-v{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;margin-top:1px;}
-.ss-v.fgp{color:var(--accent);}.ss-v.mk{color:var(--green);}.ss-v.at{color:var(--blue);}
-.qpts-wrap{padding:0 8px 10px;flex-shrink:0;}
-.qpts-lbl{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--sub);text-transform:uppercase;margin-bottom:4px;}
-.qrow{display:flex;gap:4px;margin-bottom:3px;align-items:center;}
-.qrl{font-family:'DM Mono',monospace;font-size:9px;width:20px;}
-.qbw{flex:1;height:11px;background:var(--card2);border-radius:3px;overflow:hidden;border:1px solid var(--border);}
-.qbar{height:100%;border-radius:3px;transition:width .3s;}
-.qpv{font-family:'DM Mono',monospace;font-size:9px;width:20px;text-align:right;color:var(--sub);}
-
-/* ── MODALS / SHEETS ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s;}
-.overlay.open{opacity:1;pointer-events:all;}
-.sheet{background:#181f32;border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:820px;max-height:90vh;display:flex;flex-direction:column;transform:translateY(30px);transition:transform .22s;}
-.overlay.open .sheet{transform:translateY(0);}
-.sh-handle{width:34px;height:4px;background:var(--border);border-radius:2px;margin:9px auto 0;flex-shrink:0;}
-.sh-hdr{padding:11px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;}
-.sh-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;letter-spacing:1px;}
-.sh-x{background:var(--card2);border:1px solid var(--border);color:var(--sub);font-size:13px;width:28px;height:28px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s;}
-.sh-x:hover{color:var(--text);}
-.sh-body{padding:14px 16px;overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
-
-/* ── PRO UPGRADE MODAL (centered, not bottom sheet) ── */
-#upgrade-ov{align-items:center;}
-.upgrade-modal{background:#0f1826;border:1px solid var(--border);border-radius:20px;width:calc(100% - 32px);max-width:480px;padding:0;overflow:hidden;transform:scale(.94);transition:transform .22s;}
-.overlay.open .upgrade-modal{transform:scale(1);}
-.upgrade-hero{background:linear-gradient(135deg,#1a2a0a 0%,#0f1826 100%);padding:28px 24px 20px;text-align:center;position:relative;}
-.upgrade-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,215,0,.02) 20px,rgba(255,215,0,.02) 21px);}
-.upgrade-crown{font-size:40px;display:block;margin-bottom:10px;position:relative;z-index:1;}
-.upgrade-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;letter-spacing:2px;color:var(--gold);position:relative;z-index:1;margin-bottom:6px;}
-.upgrade-sub{font-family:'DM Mono',monospace;font-size:11px;color:var(--sub);position:relative;z-index:1;line-height:1.6;}
-.upgrade-features{padding:18px 24px 0;}
-.upgrade-feat{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
-.feat-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
-.feat-text{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--text);letter-spacing:.3px;}
-.feat-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);margin-top:1px;}
-.upgrade-pricing{padding:16px 24px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.price-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
-.price-card:active{transform:scale(.96);}
-.price-card.best{border-color:var(--gold);background:rgba(255,215,0,.06);}
-.price-card.best::before{content:'BEST VALUE';position:absolute;top:0;right:0;background:var(--gold);color:#1a0e00;font-family:'Barlow Condensed',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;padding:2px 7px;border-radius:0 0 0 8px;}
-.price-amount{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--text);}
-.price-period{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);}
-.price-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--sub);margin-top:3px;letter-spacing:1px;}
-.upgrade-cta{padding:0 24px 24px;display:flex;flex-direction:column;gap:8px;}
-.cta-primary{background:linear-gradient(135deg,var(--gold),#FFA500);color:#1a0e00;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;padding:14px 20px;border-radius:12px;border:none;cursor:pointer;width:100%;transition:opacity .15s,transform .1s;}
-.cta-primary:active{transform:scale(.97);opacity:.85;}
-.cta-secondary{background:transparent;border:1px solid var(--border);color:var(--sub);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;padding:10px 20px;border-radius:10px;cursor:pointer;width:100%;transition:all .15s;}
-.cta-secondary:active{background:var(--card2);}
-.upgrade-note{font-family:'DM Mono',monospace;font-size:9px;color:var(--dim);text-align:center;margin-top:4px;}
-
-/* ── HISTORY STYLES ── */
-.gc{background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:10px 13px;margin-bottom:7px;}
-.gct{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:3px;}
-.gcd{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);}
-.gcnm{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;}
-.gcs{display:flex;gap:8px;flex-wrap:wrap;}
-.gcs span{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);}
-.gcs span b{color:var(--text);font-weight:500;}
-.gca{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
-.gcload{background:rgba(41,121,255,.15);border:1px solid rgba(41,121,255,.3);color:var(--blue);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;padding:6px 11px;border-radius:8px;cursor:pointer;min-height:34px;}
-.gcload:active{background:var(--blue);color:#fff;}
-.gcdel{background:rgba(255,59,48,.08);border:1px solid rgba(255,59,48,.2);color:var(--red);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;padding:6px 11px;border-radius:8px;cursor:pointer;min-height:34px;}
-.gcdel:active{background:var(--red);color:#fff;}
-.wow{margin-top:14px;border-top:1px solid var(--border);padding-top:12px;}
-.wow-t{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:9px;}
-.ptc{background:var(--card2);border:1px solid var(--border);border-radius:10px;margin-bottom:9px;overflow:hidden;}
-.ptch{padding:8px 12px;background:rgba(255,107,0,.07);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;}
-.ptcn{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:var(--accent);}
-.ptcnm{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;flex:1;}
-.spark{display:inline-flex;gap:2px;align-items:flex-end;height:16px;}
-.spb{width:4px;background:var(--blue);border-radius:1px;}
-.ptbl{width:100%;border-collapse:collapse;}
-.ptbl th{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--sub);padding:4px 7px;border-bottom:1px solid var(--border);text-align:center;white-space:nowrap;}
-.ptbl th:first-child{text-align:left;}
-.ptbl td{padding:4px 7px;text-align:center;border-bottom:1px solid rgba(28,45,66,.4);font-family:'DM Mono',monospace;font-size:9px;}
-.ptbl td:first-child{text-align:left;font-size:9px;color:var(--sub);}
-.ptbl tr.av td{background:rgba(255,107,0,.04);border-bottom:none;}
-.tup{color:var(--green);font-weight:700;}.tdn{color:var(--red);font-weight:700;}.teq{color:var(--sub);}
-
-/* ── SMS STYLES ── */
-.sms-tabs{display:flex;gap:4px;margin-bottom:10px;}
-.sms-tab{flex:1;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:1px;padding:7px;text-align:center;border-radius:9px;border:1px solid var(--border);background:var(--card2);color:var(--sub);cursor:pointer;min-height:38px;transition:all .15s;}
-.sms-tab.on{background:rgba(0,200,83,.2);border-color:var(--green);color:var(--green);}
-.sms-fld{display:flex;flex-direction:column;gap:3px;margin-bottom:9px;}
-.sms-fld label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;color:var(--sub);text-transform:uppercase;}
-.sms-fld input{background:var(--card2);border:1px solid var(--border);color:var(--text);font-size:13px;padding:9px 11px;border-radius:10px;min-height:44px;-webkit-appearance:none;}
-.sms-fld input:focus{outline:none;border-color:var(--blue);}
-.sms-prev{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.85;color:var(--text);white-space:pre-wrap;margin-bottom:10px;max-height:220px;overflow-y:auto;}
-.sms-send{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;letter-spacing:2px;padding:13px 18px;border-radius:12px;border:none;background:var(--green);color:#fff;cursor:pointer;width:100%;min-height:50px;transition:opacity .15s,transform .1s;}
-.sms-send:active{transform:scale(.97);opacity:.85;}
-
-/* ── PDF REPORT MODAL ── */
-.report-preview{background:#fff;color:#111;border-radius:10px;padding:20px;font-family:Arial,sans-serif;font-size:12px;line-height:1.6;max-height:55vh;overflow-y:auto;margin-bottom:12px;}
-.report-preview h1{font-size:18px;color:#FF6B00;margin-bottom:4px;}
-.report-preview h2{font-size:13px;color:#333;margin:12px 0 4px;border-bottom:1px solid #ddd;padding-bottom:3px;}
-.report-preview table{width:100%;border-collapse:collapse;margin-top:6px;}
-.report-preview table th{background:#f5f5f5;padding:5px 7px;font-size:10px;text-align:left;border-bottom:1px solid #ddd;}
-.report-preview table td{padding:4px 7px;font-size:11px;border-bottom:1px solid #eee;}
-.report-preview table tr:nth-child(even) td{background:#fafafa;}
-.rpt-btn{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;letter-spacing:2px;padding:12px 20px;border-radius:12px;border:none;cursor:pointer;width:100%;min-height:48px;margin-bottom:6px;transition:opacity .15s,transform .1s;}
-.rpt-btn:active{transform:scale(.97);opacity:.85;}
-.rpt-print{background:linear-gradient(135deg,var(--gold),#FFA500);color:#1a0e00;}
-.rpt-sms{background:var(--green);color:#fff;}
-.rpt-close{background:var(--card2);border:1px solid var(--border);color:var(--sub);}
-
-/* ── STRIPE PAYMENT MODAL ── */
-.stripe-plans{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.stripe-plan{background:var(--card2);border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;text-align:center;}
-.stripe-plan:active{transform:scale(.96);}
-.stripe-plan.selected{border-color:var(--gold);background:rgba(255,215,0,.06);}
-.sp-amount{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--text);}
-.sp-period{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);}
-.sp-desc{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--sub);margin-top:4px;letter-spacing:1px;}
-.stripe-cta{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:2px;padding:14px 20px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--gold),#FFA500);color:#1a0e00;cursor:pointer;width:100%;min-height:52px;margin-bottom:8px;transition:opacity .15s,transform .1s;}
-.stripe-cta:active{transform:scale(.97);opacity:.85;}
-.stripe-trust{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);text-align:center;}
-.stripe-divider{text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);margin:10px 0;position:relative;}
-.stripe-divider::before,.stripe-divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border);}
-.stripe-divider::before{left:0;}.stripe-divider::after{right:0;}
-
-/* ── INSTALL BANNER ── */
-.install-banner{background:linear-gradient(135deg,rgba(255,107,0,.15),rgba(255,215,0,.1));border-top:1px solid rgba(255,107,0,.3);padding:8px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.install-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--text);flex:1;}
-.install-text span{color:var(--accent);}
-.install-btn{background:var(--accent);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:1px;padding:6px 12px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;transition:opacity .15s;}
-.install-btn:active{opacity:.8;}
-.install-dismiss{background:transparent;border:none;color:var(--sub);font-size:14px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0;}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a2540;border:1px solid var(--border);border-radius:12px;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;color:var(--text);z-index:999;opacity:0;transition:all .2s;pointer-events:none;white-space:nowrap;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-::-webkit-scrollbar{width:6px;height:6px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-@media(max-width:640px){.shot-panel{display:none;}.gm-date,.hbtn.ex,.hbtn.rpt{display:none;}}
-
-/* ── SHARE MODAL ── */
-.share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.share-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .15s;-webkit-user-select:none;user-select:none;text-align:center;}
-.share-card:active{transform:scale(.94);background:var(--card);}
-.share-card-icon{font-size:28px;line-height:1;}
-.share-card-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:1px;color:var(--text);}
-.share-card-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);line-height:1.4;}
-.share-card.primary{border-color:rgba(255,107,0,.4);background:rgba(255,107,0,.06);}
-.share-card.primary .share-card-label{color:var(--accent);}
-.share-card.blue{border-color:rgba(41,121,255,.4);background:rgba(41,121,255,.06);}
-.share-card.blue .share-card-label{color:var(--blue);}
-.share-card.green{border-color:rgba(0,200,83,.4);background:rgba(0,200,83,.06);}
-.share-card.green .share-card-label{color:var(--green);}
-.share-card.purple{border-color:rgba(191,90,242,.4);background:rgba(191,90,242,.06);}
-.share-card.purple .share-card-label{color:var(--purple);}
-.share-divider{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.share-divider-line{flex:1;height:1px;background:var(--border);}
-.share-divider-text{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);white-space:nowrap;}
-.qr-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--card2);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;}
-.qr-canvas{border-radius:8px;border:3px solid #fff;}
-.qr-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);text-align:center;}
-.share-link-box{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
-.share-link-url{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.copy-link-btn{background:var(--accent);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:1px;padding:6px 12px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity .15s;}
-.copy-link-btn:active{opacity:.8;}
-.share-note{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);text-align:center;line-height:1.6;margin-top:8px;}
-.hbtn.share{background:rgba(41,121,255,.15);border:1px solid rgba(41,121,255,.3);color:var(--blue);}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>CourtIQ Elite Modular</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-
-<!-- ── HEADER ── -->
-<div class="hdr">
-  <div class="hdr-top">
-    <div class="logo">COURT<em>IQ</em><span class="pro-badge" id="pro-badge" style="display:none">PRO</span></div>
-    <div class="game-meta">
-      <input class="gm-team" id="ht" value="HOME" maxlength="12">
-      <span class="gm-vs">VS</span>
-      <input class="gm-team" id="at" value="AWAY" maxlength="12">
-      <input class="gm-date" id="gd" type="date">
-    </div>
-    <div class="hdr-btns">
-      <button class="hbtn sv"      id="btn-save">💾 SAVE</button>
-      <button class="hbtn hi"      id="btn-hist">📈 HISTORY</button>
-      <button class="hbtn rpt"     id="btn-rpt">📄 REPORTS</button>
-      <button class="hbtn ex"      id="btn-csv">⬇ CSV</button>
-      <button class="hbtn nw"      id="btn-new">＋ NEW</button>
-      <button class="hbtn share"   id="btn-share">🔗 SHARE</button>
-      <button class="hbtn upgrade" id="btn-upgrade" style="display:none">⭐ UPGRADE</button>
-    </div>
-  </div>
-  <div class="q-bar">
-    <button class="q-btn on" data-q="1">Q1</button>
-    <button class="q-btn" data-q="2">Q2</button>
-    <button class="q-btn" data-q="3">Q3</button>
-    <button class="q-btn" data-q="4">Q4</button>
-    <button class="q-btn" data-q="OT">OT</button>
-    <span class="q-label" id="qlbl">Q1 Active</span>
-  </div>
-</div>
-
-<!-- ── TEAM TOTALS ── -->
-<div class="totals-strip">
-  <span class="ts-lbl">TEAM</span>
-  <div class="ts-pill"><span class="ts-l">PTS</span><span class="ts-v" id="t-pts" style="color:var(--accent)">0</span></div>
-  <div class="ts-pill"><span class="ts-l">REB</span><span class="ts-v" id="t-reb" style="color:var(--blue)">0</span></div>
-  <div class="ts-pill"><span class="ts-l">AST</span><span class="ts-v" id="t-ast" style="color:var(--green)">0</span></div>
-  <div class="ts-pill"><span class="ts-l">TOV</span><span class="ts-v" id="t-tov" style="color:var(--red)">0</span></div>
-  <div class="ts-pill"><span class="ts-l">FOULS</span><span class="ts-v" id="t-foul" style="color:var(--yellow)">0</span></div>
-  <div class="ts-pill"><span class="ts-l">FT</span><span class="ts-v" id="t-ft" style="color:var(--purple)">0/0</span></div>
-  <div class="ts-pill"><span class="ts-l">STL</span><span class="ts-v" id="t-stl" style="color:var(--cyan)">0</span></div>
-  <div class="ts-pill"><span class="ts-l">BLK</span><span class="ts-v" id="t-blk" style="color:var(--purple)">0</span></div>
-  <div class="ts-pill"><span class="ts-l">FG%</span><span class="ts-v" id="t-fgp" style="color:#aaa">0%</span></div>
-  <div class="ts-pill"><span class="ts-l">3P%</span><span class="ts-v" id="t-3pp" style="color:#aaa">0%</span></div>
-</div>
-
-<!-- ── PWA INSTALL BANNER ── -->
-<div class="install-banner" id="install-banner" style="display:none">
-  <span class="install-text">Add <span>CourtIQ</span> to your Home Screen for faster sideline access</span>
-  <button class="install-btn" id="install-btn">Install App</button>
-  <button class="install-dismiss" id="install-dismiss">✕</button>
-</div>
-
-<!-- ── BODY ── -->
-<div class="body-wrap">
-  <div class="table-panel">
-    <div class="col-header" id="col-header">
-      <div class="col-header-inner" id="col-header-inner">
-        <div class="ch left col-player">PLAYER</div>
-        <div class="ch col-pts"><span class="ch-main" style="color:var(--accent)">PTS</span><span class="ch-sub">GAME</span></div>
-        <div class="ch col-shoot"><span class="ch-main" style="color:#60a5fa">2-PT FG</span><span class="ch-sub">MADE / MISS</span></div>
-        <div class="ch col-shoot"><span class="ch-main" style="color:var(--accent)">3-PT FG</span><span class="ch-sub">MADE / MISS (+3)</span></div>
-        <div class="ch col-shoot"><span class="ch-main" style="color:var(--purple)">FREE THROW</span><span class="ch-sub">MADE / MISS (+1)</span></div>
-        <div class="ch col-single"><span class="ch-main" style="color:var(--blue)">REB</span></div>
-        <div class="ch col-single"><span class="ch-main" style="color:var(--green)">AST</span></div>
-        <div class="ch col-single"><span class="ch-main" style="color:var(--red)">TOV</span></div>
-        <div class="ch col-single"><span class="ch-main" style="color:var(--cyan)">STL</span></div>
-        <div class="ch col-single"><span class="ch-main" style="color:var(--purple)">BLK</span></div>
-        <div class="ch col-single"><span class="ch-main" style="color:var(--yellow)">FOULS</span></div>
-        <div class="ch col-acts"></div>
-      </div>
-    </div>
-    <div class="rows-scroll" id="rows-scroll">
-      <div class="rows-inner" id="rows-body"></div>
-    </div>
-    <div class="add-bar">
-      <input id="np-n"  placeholder="#"   maxlength="3" type="text">
-      <input id="np-nm" placeholder="Player name..." type="text">
-      <input id="np-ph" placeholder="Phone (opt.)" type="tel">
-      <button class="add-submit" id="btn-add">+ ADD PLAYER</button>
-    </div>
-  </div>
-
-  <!-- SHOT CHART -->
-  <div class="shot-panel">
-    <div class="sp-hdr">
-      <div class="sp-title">🏀 SHOT CHART</div>
-      <select class="sp-sel" id="shotsel"></select>
-    </div>
-    <div class="stg">
-      <div class="stb on made" data-type="made">✓ MADE</div>
-      <div class="stb miss" data-type="miss">✗ MISS</div>
-      <div class="stb ft" data-type="ft">FREE THROW</div>
-    </div>
-    <div class="leg-row">
-      <div class="leg"><div class="ld made"></div>Made</div>
-      <div class="leg"><div class="ld miss"></div>Missed</div>
-      <div class="leg"><div class="ld ft"></div>FT</div>
-      <div class="leg" style="margin-left:auto;font-size:7px">Right-click removes</div>
-    </div>
-    <div style="padding:0 9px 5px;font-family:'DM Mono',monospace;font-size:8px;color:var(--sub);" id="shot-sync-note">
-      Select a player above → clicks auto-update their stats
-    </div>
-    <div class="cw">
-      <svg id="court" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="360" fill="#b8935a" rx="6"/>
-        <rect x="140" y="0" width="120" height="140" fill="#a07840" stroke="#8a6535" stroke-width="2"/>
-        <rect x="150" y="0" width="100" height="110" fill="none" stroke="#8a6535" stroke-width="2"/>
-        <circle cx="200" cy="110" r="55" fill="none" stroke="#8a6535" stroke-width="2"/>
-        <rect x="185" y="5" width="30" height="4" fill="#8a6535"/>
-        <circle cx="200" cy="17" r="7" fill="none" stroke="#7a5530" stroke-width="2.5"/>
-        <path d="M 178 17 A 22 22 0 0 1 222 17" fill="none" stroke="#8a6535" stroke-width="1.5"/>
-        <path d="M 28 0 L 28 140 A 174 174 0 0 0 372 140 L 372 0" fill="none" stroke="#8a6535" stroke-width="2.5"/>
-        <line x1="0" y1="360" x2="400" y2="360" stroke="#8a6535" stroke-width="1" stroke-dasharray="4,4"/>
-        <circle cx="200" cy="360" r="44" fill="none" stroke="#8a6535" stroke-width="1.5" stroke-dasharray="4,4"/>
-        <line x1="150" y1="52" x2="140" y2="52" stroke="#8a6535" stroke-width="1.5"/>
-        <line x1="250" y1="52" x2="260" y2="52" stroke="#8a6535" stroke-width="1.5"/>
-        <line x1="150" y1="80" x2="140" y2="80" stroke="#8a6535" stroke-width="1.5"/>
-        <line x1="250" y1="80" x2="260" y2="80" stroke="#8a6535" stroke-width="1.5"/>
-        <g id="sdots"></g>
-      </svg>
-    </div>
-    <div class="ss-row">
-      <div class="ss"><div class="ss-l">FG%</div><div class="ss-v fgp" id="cfp">0%</div></div>
-      <div class="ss"><div class="ss-l">MAKES</div><div class="ss-v mk" id="cmk">0</div></div>
-      <div class="ss"><div class="ss-l">ATTEMPTS</div><div class="ss-v at" id="cat">0</div></div>
-    </div>
-    <div class="qpts-wrap">
-      <div class="qpts-lbl">Pts by Quarter</div>
-      <div id="qbars"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ── PRO UPGRADE MODAL ── -->
-<div class="overlay" id="upgrade-ov">
-  <div class="upgrade-modal">
-    <div class="upgrade-hero">
-      <span class="upgrade-crown">⭐</span>
-      <div class="upgrade-title">COURTIQ PRO</div>
-      <div class="upgrade-sub">Unlock the full coaching toolkit.<br>Cancel anytime.</div>
-    </div>
-    <div class="upgrade-features">
-      <div class="upgrade-feat"><span class="feat-icon">📊</span><div><div class="feat-text">Full Season History</div><div class="feat-sub">Save, load &amp; compare every game</div></div></div>
-      <div class="upgrade-feat"><span class="feat-icon">📈</span><div><div class="feat-text">Week-Over-Week Trends</div><div class="feat-sub">Player growth charts across the season</div></div></div>
-      <div class="upgrade-feat"><span class="feat-icon">📄</span><div><div class="feat-text">PDF Season Reports</div><div class="feat-sub">Professional reports to share with parents</div></div></div>
-      <div class="upgrade-feat"><span class="feat-icon">📤</span><div><div class="feat-text">CSV Exports &amp; SMS Season Stats</div><div class="feat-sub">Take data anywhere you need it</div></div></div>
-      <div class="upgrade-feat"><span class="feat-icon">🏀</span><div><div class="feat-text">Up to 5 Teams</div><div class="feat-sub">Manage varsity, JV, and more</div></div></div>
-    </div>
-    <div class="upgrade-pricing">
-      <div class="stripe-plan" id="plan-month" data-plan="monthly">
-        <div class="sp-amount">$9.99</div>
-        <div class="sp-period">per month</div>
-        <div class="sp-desc">MONTHLY</div>
-      </div>
-      <div class="stripe-plan best" id="plan-season" data-plan="season">
-        <div class="sp-amount">$24.99</div>
-        <div class="sp-period">per season</div>
-        <div class="sp-desc">SEASON PASS</div>
-      </div>
-    </div>
-    <div class="upgrade-cta">
-      <button class="cta-primary" id="upgrade-checkout-btn">⭐ START PRO — GET INSTANT ACCESS</button>
-      <button class="cta-secondary" id="upgrade-later-btn">Maybe later — continue with free</button>
-      <div class="upgrade-note">✓ Secure checkout via Stripe &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; No hidden fees</div>
-      <div class="upgrade-note" style="margin-top:6px;color:var(--accent);">— OR — for testing: <a id="activate-demo-btn" href="#" style="color:var(--gold);text-decoration:underline;">Activate Pro Demo (no payment)</a></div>
-    </div>
-  </div>
-</div>
-
-<!-- ── HISTORY SHEET ── -->
-<div class="overlay" id="hov">
-  <div class="sheet">
-    <div class="sh-handle"></div>
-    <div class="sh-hdr"><div class="sh-title">📋 HISTORY &amp; TRENDS</div><div class="sh-x" id="hov-close">✕</div></div>
-    <div class="sh-body" id="hbody"></div>
-  </div>
-</div>
-
-<!-- ── SMS SHEET ── -->
-<div class="overlay" id="sov">
-  <div class="sheet" style="max-width:480px;">
-    <div class="sh-handle"></div>
-    <div class="sh-hdr"><div class="sh-title">📲 SEND STATS</div><div class="sh-x" id="sov-close">✕</div></div>
-    <div class="sh-body">
-      <div id="sms-pname" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--accent);margin-bottom:10px;"></div>
-      <div class="sms-tabs">
-        <div class="sms-tab on" data-mode="game">THIS GAME</div>
-        <div class="sms-tab" data-mode="season">SEASON AVGS</div>
-        <div class="sms-tab" data-mode="qtr">BY QUARTER</div>
-      </div>
-      <div class="sms-fld"><label>Phone Number</label><input id="sms-ph" type="tel" placeholder="(555) 000-0000"></div>
-      <div class="sms-fld"><label>Message Preview</label><div class="sms-prev" id="sms-msg"></div></div>
-      <button class="sms-send" id="sms-send-btn">📲 OPEN IN MESSAGES</button>
-      <div style="margin-top:7px;font-size:10px;color:var(--sub);text-align:center;font-family:'DM Mono',monospace;">iPhone/iPad: opens Messages · Mac: copies to clipboard</div>
-    </div>
-  </div>
-</div>
-
-<!-- ── REPORT SHEET ── -->
-<div class="overlay" id="rov">
-  <div class="sheet" style="max-width:600px;">
-    <div class="sh-handle"></div>
-    <div class="sh-hdr"><div class="sh-title">📄 SEASON REPORT</div><div class="sh-x" id="rov-close">✕</div></div>
-    <div class="sh-body">
-      <div id="report-content"></div>
-      <button class="rpt-btn rpt-print" id="rpt-print-btn">🖨️ PRINT / SAVE AS PDF</button>
-      <button class="rpt-btn rpt-sms" id="rpt-sms-all-btn">📲 SMS REPORTS TO ALL PLAYERS</button>
-      <button class="rpt-btn rpt-close" id="rov-close-btn">Close</button>
-      <div style="margin-top:6px;font-size:9px;color:var(--sub);text-align:center;font-family:'DM Mono',monospace;">Print → Save as PDF for shareable files · Works on iPhone &amp; iPad via AirPrint</div>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-'use strict';
-// ═══ SUBSCRIPTION TIER SYSTEM ═══
-// Tiers: 'free' | 'pro'
-// Pro features: history save/load, CSV export, season SMS, PDF reports, trends
-// Free features: all live stat entry, current-game SMS, shot chart
-const TIER_KEY = 'ciq_tier';
-const TIER_EXP = 'ciq_tier_exp';
-
-// Stripe Payment Links — replace with your real Stripe Payment Link URLs
-const STRIPE_LINKS = {
-  monthly: 'https://buy.stripe.com/test_monthly_placeholder',
-  season:  'https://buy.stripe.com/test_season_placeholder'
-};
-
-function getTier() {
-  const tier = localStorage.getItem(TIER_KEY) || 'free';
-  const exp  = parseInt(localStorage.getItem(TIER_EXP) || '0');
-  if (tier === 'pro' && exp > 0 && Date.now() > exp) {
-    // Subscription expired
-    localStorage.removeItem(TIER_KEY);
-    localStorage.removeItem(TIER_EXP);
-    return 'free';
-  }
-  return tier;
-}
-
-function isPro() { return getTier() === 'pro'; }
-
-function activatePro(plan) {
-  const dur = plan === 'monthly' ? 30 : 120; // days
-  localStorage.setItem(TIER_KEY, 'pro');
-  localStorage.setItem(TIER_EXP, String(Date.now() + dur * 86400000));
-  applyTierUI();
-  showT('✅ CourtIQ Pro activated!');
-}
-
-function applyTierUI() {
-  const pro = isPro();
-  const badge   = document.getElementById('pro-badge');
-  const upBtn   = document.getElementById('btn-upgrade');
-  if (badge)  badge.style.display   = pro ? 'inline' : 'none';
-  if (upBtn)  upBtn.style.display   = pro ? 'none' : 'flex';
-}
-
-// Gate check — show upgrade modal if free user hits a Pro feature
-function requirePro(featureName, onGranted) {
-  if (isPro()) { onGranted(); return; }
-  showUpgradeModal(featureName);
-}
-
-function showUpgradeModal(featureName) {
-  if (featureName) {
-    const sub = document.querySelector('.upgrade-sub');
-    if (sub) sub.textContent = featureName + ' is a CourtIQ Pro feature.';
-  }
-  openM('upgrade-ov');
-}
-
-// ═══ STAT MODEL ═══
-let CQ = 1, ST = 'made', SMSP = null, SMSM = 'game';
-let players = [], shots = [];
-let nextId = 1;
-let selectedPlan = 'season';
-let deferredInstallPrompt = null;
-
-const SK = 'ciq9_games';
-const RK = 'ciq9_roster';
-
-function eq() {
-  return { p2m:0, p2a:0, p3m:0, p3a:0, ftm:0, fta:0, reb:0, ast:0, tov:0, stl:0, blk:0, fouls:0 };
-}
-function mkP(num, name, phone, id) {
-  return { id: id || nextId++, num, name, phone: phone || '', q: { 1:eq(), 2:eq(), 3:eq(), 4:eq(), OT:eq() } };
-}
-function fgm(s) { return s.p2m + s.p3m; }
-function fga(s) { return s.p2a + s.p3a; }
-function pts(s) { return s.p2m*2 + s.p3m*3 + s.ftm; }
-function pct(a,b) { return b > 0 ? Math.round((a/b)*100) : 0; }
-function tot(p) {
-  const t = eq();
-  for (const q of [1,2,3,4,'OT']) { const s = p.q[q]||eq(); for (const k in t) t[k] += s[k]; }
-  return t;
-}
-function fmtD(d) {
-  if (!d) return '';
-  try { const [y,m,dy] = d.split('-'); return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+parseInt(dy)+', '+y; }
-  catch(e) { return d; }
-}
-function getGames() { try { return JSON.parse(localStorage.getItem(SK)) || []; } catch(e) { return []; } }
-function migrQ(q) {
-  if (!q) return eq();
-  if (q.p2m !== undefined) return q;
-  const tpm=q.tpm||0, tpa=q.tpa||0, fgmO=q.fgm||0, fgaO=q.fga||0;
-  return { p2m:Math.max(0,fgmO-tpm), p2a:Math.max(0,fgaO-tpa), p3m:tpm, p3a:tpa,
-           ftm:q.ftm||0, fta:q.fta||0, reb:q.reb||0, ast:q.ast||0, tov:q.tov||0,
-           stl:q.stl||0, blk:q.blk||0, fouls:q.fouls||0 };
-}
-
-// ═══ INIT ═══
-(function init() {
-  document.getElementById('gd').value = new Date().toISOString().split('T')[0];
-  try {
-    const saved = JSON.parse(localStorage.getItem(RK));
-    if (saved && saved.length) {
-      players = saved.map(p => {
-        if (p.id >= nextId) nextId = p.id + 1;
-        const n = mkP(p.num, p.name, p.phone, p.id);
-        if (p.q) { for (const q of [1,2,3,4,'OT']) n.q[q] = migrQ(p.q[q]); }
-        return n;
-      });
-    }
-  } catch(e) {}
-  if (!players.length) {
-    [['1','Player 1'],['2','Player 2'],['3','Player 3'],['4','Player 4'],['5','Player 5']]
-      .forEach(([n,nm]) => players.push(mkP(n,nm)));
-  }
-
-  applyTierUI();
-
-  // Sync header scroll
-  const scroll = document.getElementById('rows-scroll');
-  const hdrInner = document.getElementById('col-header-inner');
-  scroll.addEventListener('scroll', () => { hdrInner.style.marginLeft = -scroll.scrollLeft + 'px'; });
-
-  // Wire static buttons
-  document.getElementById('btn-save').addEventListener('click', () => requirePro('Game history', saveGame));
-  document.getElementById('btn-hist').addEventListener('click', () => requirePro('Season history & trends', openHistory));
-  document.getElementById('btn-rpt').addEventListener('click',  () => requirePro('PDF season reports', openReportSheet));
-  document.getElementById('btn-csv').addEventListener('click',  () => requirePro('CSV export', exportCSV));
-  document.getElementById('btn-new').addEventListener('click',  newGame);
-  document.getElementById('btn-add').addEventListener('click',  addPlayer);
-  document.getElementById('btn-upgrade').addEventListener('click', () => showUpgradeModal());
-  document.getElementById('np-nm').addEventListener('keydown', e => { if(e.key==='Enter') addPlayer(); });
-
-  // Modal wiring
-  document.getElementById('hov').addEventListener('click',      e => { if(e.target.id==='hov') closeM('hov'); });
-  document.getElementById('hov-close').addEventListener('click', () => closeM('hov'));
-  document.getElementById('sov').addEventListener('click',      e => { if(e.target.id==='sov') closeM('sov'); });
-  document.getElementById('sov-close').addEventListener('click', () => closeM('sov'));
-  document.getElementById('rov').addEventListener('click',      e => { if(e.target.id==='rov') closeM('rov'); });
-  document.getElementById('rov-close').addEventListener('click', () => closeM('rov'));
-  document.getElementById('rov-close-btn').addEventListener('click', () => closeM('rov'));
-  document.getElementById('upgrade-ov').addEventListener('click', e => { if(e.target.id==='upgrade-ov') closeM('upgrade-ov'); });
-  document.getElementById('upgrade-later-btn').addEventListener('click', () => closeM('upgrade-ov'));
-
-  // Upgrade modal plan selection
-  document.querySelectorAll('.stripe-plan').forEach(card => {
-    card.addEventListener('click', () => {
-      selectedPlan = card.dataset.plan;
-      document.querySelectorAll('.stripe-plan').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-    });
-  });
-  document.getElementById('plan-season').classList.add('selected');
-
-  // Checkout button — opens Stripe link in new tab
-  document.getElementById('upgrade-checkout-btn').addEventListener('click', () => {
-    const url = STRIPE_LINKS[selectedPlan] || STRIPE_LINKS.season;
-    window.open(url, '_blank');
-    // After Stripe redirect back, user would have Pro. For demo we activate immediately:
-    showT('Opening Stripe checkout... activate demo below if testing.');
-  });
-
-  // Demo activation (no payment — for testing)
-  document.getElementById('activate-demo-btn').addEventListener('click', e => {
-    e.preventDefault();
-    activatePro(selectedPlan);
-    closeM('upgrade-ov');
-  });
-
-  // SMS
-  document.getElementById('sms-send-btn').addEventListener('click', doSMS);
-  document.getElementById('sms-ph').addEventListener('input', updSMSMsg);
-  document.querySelectorAll('.sms-tab').forEach(t => t.addEventListener('click', () => setSMSMode(t.dataset.mode)));
-
-  // Report
-  document.getElementById('rpt-print-btn').addEventListener('click', () => window.print());
-  document.getElementById('rpt-sms-all-btn').addEventListener('click', smsAllPlayers);
-
-  // Shot chart + quarter + shot type
-  document.querySelectorAll('.stb').forEach(b => b.addEventListener('click', () => setST(b.dataset.type)));
-  document.querySelectorAll('.q-btn').forEach(b => b.addEventListener('click', () => setQ(b.dataset.q === 'OT' ? 'OT' : parseInt(b.dataset.q))));
-  document.getElementById('shotsel').addEventListener('change', () => { reShot(); updShotNote(); });
-  const court = document.getElementById('court');
-  court.addEventListener('click', plotShot);
-  court.addEventListener('touchend', e => { e.preventDefault(); plotShot(e); });
-
-  // Keyboard
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeM('hov'); closeM('sov'); closeM('rov'); closeM('upgrade-ov'); }
-  });
-
-  // PWA install prompt
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    const banner = document.getElementById('install-banner');
-    if (banner && !localStorage.getItem('install_dismissed')) banner.style.display = 'flex';
-  });
-  document.getElementById('install-btn').addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    document.getElementById('install-banner').style.display = 'none';
-  });
-  document.getElementById('install-dismiss').addEventListener('click', () => {
-    localStorage.setItem('install_dismissed', '1');
-    document.getElementById('install-banner').style.display = 'none';
-  });
-
-  renderAll();
-})();
-
-// ═══ QUARTER ═══
-function setQ(q) {
-  CQ = q;
-  document.querySelectorAll('.q-btn').forEach(b => b.classList.toggle('on', b.dataset.q == String(q)));
-  document.getElementById('qlbl').textContent = (q==='OT' ? 'OT' : 'Q'+q) + ' Active';
-  renderRows();
-  showT((q==='OT' ? 'OT' : 'Q'+q) + ' active');
-}
-
-// ═══ RENDER ═══
-function renderAll() { renderRows(); updTotals(); updShotSel(); updQBars(); reShot(); }
-
-function renderRows() {
-  const body = document.getElementById('rows-body');
-  const scrollTop = document.getElementById('rows-scroll').scrollTop;
-  body.innerHTML = '';
-  players.forEach(p => body.appendChild(buildRow(p)));
-  document.getElementById('rows-scroll').scrollTop = scrollTop;
-  attachRowListeners();
-}
-
-function buildRow(p) {
-  const t = tot(p), q = p.q[CQ]||eq(), pv = pts(t);
-  const fgPct=pct(fgm(t),fga(t)), ftPct=pct(t.ftm,t.fta);
-  const p3Pct=pct(t.p3m,t.p3a), p2Pct=pct(t.p2m,t.p2a);
-  const foulColor = t.fouls>=5?'var(--red)':t.fouls>=4?'var(--yellow)':'var(--sub)';
-  const id = p.id;
-  const row = document.createElement('div');
-  row.className = 'prow'; row.dataset.pid = id;
-  function stepper(valId, val, valCls, stepperCls, action) {
-    return `<div class="stepper ${stepperCls}">
-      <button class="step-btn minus" data-pid="${id}" data-action="${action}-dn">−</button>
-      <span class="step-val ${valCls}" data-pid="${id}" data-valid="${valId}">${val}</span>
-      <button class="step-btn plus"  data-pid="${id}" data-action="${action}-up">＋</button>
-    </div>`;
-  }
-  row.innerHTML = `
-    <div class="cell-player">
-      <div class="p-num">${p.num}</div>
-      <div class="p-info">
-        <div class="p-name">${p.name}</div>
-        <div class="p-sub" style="color:${foulColor}" data-pid="${id}" data-role="psub">${t.fouls} foul${t.fouls!==1?'s':''} · ${fgPct>0?fgPct+'% FG':'—'}</div>
-      </div>
-    </div>
-    <div class="cell-pts">
-      <div class="pts-big" data-pid="${id}" data-role="pts">${pv}</div>
-      <div class="pts-lbl">GAME</div>
-    </div>
-    <div class="cell-shoot">
-      <div class="stat-lbl" style="color:#60a5fa">2-POINT</div>
-      ${stepper('p2m',q.p2m,'c-2pt','s-2pt','2m')}
-      <div class="step-info" data-pid="${id}" data-role="inf-2m">MADE · game <b>${t.p2m}/${t.p2a}</b> · ${p2Pct}%</div>
-      ${stepper('p2x',Math.max(0,q.p2a-q.p2m),'c-miss','s-miss','2x')}
-      <div class="step-info" data-pid="${id}" data-role="inf-2x">MISS</div>
-    </div>
-    <div class="cell-shoot">
-      <div class="stat-lbl" style="color:var(--accent)">3-POINT (+3 pts)</div>
-      ${stepper('p3m',q.p3m,'c-3pt','s-3pt','3m')}
-      <div class="step-info" data-pid="${id}" data-role="inf-3m">MADE · game <b>${t.p3m}/${t.p3a}</b> · ${p3Pct}%</div>
-      ${stepper('p3x',Math.max(0,q.p3a-q.p3m),'c-miss','s-miss','3x')}
-      <div class="step-info" data-pid="${id}" data-role="inf-3x">MISS</div>
-    </div>
-    <div class="cell-shoot">
-      <div class="stat-lbl" style="color:var(--purple)">FREE THROW (+1 pt)</div>
-      ${stepper('ftm',q.ftm,'c-ft','s-ft','ftm')}
-      <div class="step-info" data-pid="${id}" data-role="inf-ftm">MADE · game <b>${t.ftm}/${t.fta}</b> · ${ftPct}%</div>
-      ${stepper('ftx',Math.max(0,q.fta-q.ftm),'c-miss','s-ftx','ftx')}
-      <div class="step-info" data-pid="${id}" data-role="inf-ftx">MISS</div>
-    </div>
-    <div class="cell-single">${stepper('reb',q.reb,'c-reb','s-reb','reb')}<div class="step-info" data-pid="${id}" data-role="inf-reb">game total <b>${t.reb}</b></div></div>
-    <div class="cell-single">${stepper('ast',q.ast,'c-ast','s-ast','ast')}<div class="step-info" data-pid="${id}" data-role="inf-ast">game total <b>${t.ast}</b></div></div>
-    <div class="cell-single">${stepper('tov',q.tov,'c-tov','s-tov','tov')}<div class="step-info" data-pid="${id}" data-role="inf-tov">game total <b>${t.tov}</b></div></div>
-    <div class="cell-single">${stepper('stl',q.stl,'c-stl','s-stl','stl')}<div class="step-info" data-pid="${id}" data-role="inf-stl">game total <b>${t.stl}</b></div></div>
-    <div class="cell-single">${stepper('blk',q.blk,'c-blk','s-blk','blk')}<div class="step-info" data-pid="${id}" data-role="inf-blk">game total <b>${t.blk}</b></div></div>
-    <div class="cell-single">${stepper('fouls',q.fouls,'c-foul','s-foul','fouls')}<div class="step-info" style="color:${foulColor}" data-pid="${id}" data-role="inf-fouls">game total <b>${t.fouls}</b></div></div>
-    <div class="cell-acts">
-      <button class="act-btn sms" data-pid="${id}" data-role="sms-btn">📲 SMS</button>
-      <button class="act-btn rpt" data-pid="${id}" data-role="rpt-btn">📄 RPT</button>
-      <button class="act-btn del" data-pid="${id}" data-role="del-btn">✕ DEL</button>
-    </div>`;
-
-  // ── TOTALS BAR ──
-  const tbWrap = document.createElement('div');
-  tbWrap.style.cssText = 'min-width:max-content;';
-  tbWrap.innerHTML = buildTotalsBar(p, t);
-  tbWrap.querySelector('[data-role="ptotals-bar"]').dataset.pid = id;
-
-  const wrapper = document.createElement('div');
-  wrapper.className = 'prow-wrap';
-  wrapper.dataset.pid = id;
-  wrapper.style.cssText = 'display:flex;flex-direction:column;border-bottom:2px solid var(--border);';
-  row.style.borderBottom = 'none';
-  wrapper.appendChild(row);
-  wrapper.appendChild(tbWrap);
-  return wrapper;
-}
-
-function buildTotalsBar(p, t) {
-  const pv = pts(t);
-  const p2Pct = pct(t.p2m, t.p2a), p3Pct = pct(t.p3m, t.p3a), ftPct = pct(t.ftm, t.fta);
-  return `<div class="ptotals-bar" data-role="ptotals-bar" data-pid="${p.id}">
-    <div class="ptb-name">📊 GAME TOTALS</div>
-    <div class="ptb-cell ptb-pts"><span class="ptb-v" style="color:var(--accent)">${pv}</span><span class="ptb-l">PTS</span></div>
-    <div class="ptb-cell ptb-2pt"><span class="ptb-v" style="color:#60a5fa">${t.p2m}/${t.p2a}</span><span class="ptb-l">2PT · ${p2Pct}%</span></div>
-    <div class="ptb-cell ptb-3pt"><span class="ptb-v" style="color:var(--accent)">${t.p3m}/${t.p3a}</span><span class="ptb-l">3PT · ${p3Pct}%</span></div>
-    <div class="ptb-cell ptb-ft"><span class="ptb-v" style="color:var(--purple)">${t.ftm}/${t.fta}</span><span class="ptb-l">FT · ${ftPct}%</span></div>
-    <div class="ptb-sep"></div>
-    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--blue)">${t.reb}</span><span class="ptb-l">REB</span></div>
-    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--green)">${t.ast}</span><span class="ptb-l">AST</span></div>
-    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--red)">${t.tov}</span><span class="ptb-l">TOV</span></div>
-    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--cyan)">${t.stl}</span><span class="ptb-l">STL</span></div>
-    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--purple)">${t.blk}</span><span class="ptb-l">BLK</span></div>
-    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--yellow)">${t.fouls}</span><span class="ptb-l">FOULS</span></div>
-  </div>`;
-}
-
-function attachRowListeners() {
-  const body = document.getElementById('rows-body');
-  body.querySelectorAll('.step-btn').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); handleAction(parseInt(btn.dataset.pid), btn.dataset.action); });
-  });
-  body.querySelectorAll('[data-role="sms-btn"]').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); openSMS(parseInt(btn.dataset.pid)); });
-  });
-  body.querySelectorAll('[data-role="rpt-btn"]').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); requirePro('PDF reports', () => openReportForPlayer(parseInt(btn.dataset.pid))); });
-  });
-  body.querySelectorAll('[data-role="del-btn"]').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); delP(parseInt(btn.dataset.pid)); });
-  });
-}
-
-// ═══ ACTION HANDLER ═══
-function handleAction(pid, action) {
-  const p = players.find(x => x.id === pid); if (!p) return;
-  if (!p.q[CQ]) p.q[CQ] = eq();
-  const q = p.q[CQ];
-  let pointDelta = 0;
-  switch (action) {
-    case '2m-up':    q.p2m++; q.p2a++; pointDelta=+2; break;
-    case '2m-dn':    if(q.p2m>0){q.p2m--;q.p2a--;pointDelta=-2;} break;
-    case '2x-up':    q.p2a++; break;
-    case '2x-dn':    if(q.p2a>q.p2m) q.p2a--; break;
-    case '3m-up':    q.p3m++; q.p3a++; pointDelta=+3; break;
-    case '3m-dn':    if(q.p3m>0){q.p3m--;q.p3a--;pointDelta=-3;} break;
-    case '3x-up':    q.p3a++; break;
-    case '3x-dn':    if(q.p3a>q.p3m) q.p3a--; break;
-    case 'ftm-up':   q.ftm++; q.fta++; pointDelta=+1; break;
-    case 'ftm-dn':   if(q.ftm>0){q.ftm--;q.fta--;pointDelta=-1;} break;
-    case 'ftx-up':   q.fta++; break;
-    case 'ftx-dn':   if(q.fta>q.ftm) q.fta--; break;
-    case 'reb-up':   q.reb++; break; case 'reb-dn':   if(q.reb>0)q.reb--; break;
-    case 'ast-up':   q.ast++; break; case 'ast-dn':   if(q.ast>0)q.ast--; break;
-    case 'tov-up':   q.tov++; break; case 'tov-dn':   if(q.tov>0)q.tov--; break;
-    case 'stl-up':   q.stl++; break; case 'stl-dn':   if(q.stl>0)q.stl--; break;
-    case 'blk-up':   q.blk++; break; case 'blk-dn':   if(q.blk>0)q.blk--; break;
-    case 'fouls-up': q.fouls++; break; case 'fouls-dn': if(q.fouls>0)q.fouls--; break;
-    default: return;
-  }
-  saveRoster();
-  fastUpd(pid, pointDelta !== 0);
-}
-
-// ═══ FAST DOM UPDATE ═══
-function fastUpd(pid, flashPts) {
-  const p = players.find(x => x.id === pid); if (!p) return;
-  const t=tot(p), q=p.q[CQ]||eq(), pv=pts(t);
-  const fgPct=pct(fgm(t),fga(t)), ftPct=pct(t.ftm,t.fta);
-  const p3Pct=pct(t.p3m,t.p3a), p2Pct=pct(t.p2m,t.p2a);
-  const foulColor=t.fouls>=5?'var(--red)':t.fouls>=4?'var(--yellow)':'var(--sub)';
-  const row = document.querySelector(`.prow[data-pid="${pid}"]`); if (!row) return;
-  const getVal = id => row.querySelector(`[data-valid="${id}"][data-pid="${pid}"]`);
-  const getRole = r  => row.querySelector(`[data-role="${r}"][data-pid="${pid}"]`);
-  const ptsEl = getRole('pts');
-  if (ptsEl) { ptsEl.textContent=pv; if(flashPts){ptsEl.classList.remove('pts-flash');void ptsEl.offsetWidth;ptsEl.classList.add('pts-flash');} }
-  const subEl = getRole('psub');
-  if (subEl) { subEl.style.color=foulColor; subEl.textContent=`${t.fouls} foul${t.fouls!==1?'s':''} · ${fgPct>0?fgPct+'% FG':'—'}`; }
-  const sv=(id,v)=>{const e=getVal(id);if(e)e.textContent=v;};
-  sv('p2m',q.p2m); sv('p2x',Math.max(0,q.p2a-q.p2m));
-  sv('p3m',q.p3m); sv('p3x',Math.max(0,q.p3a-q.p3m));
-  sv('ftm',q.ftm); sv('ftx',Math.max(0,q.fta-q.ftm));
-  sv('reb',q.reb); sv('ast',q.ast); sv('tov',q.tov); sv('stl',q.stl); sv('blk',q.blk); sv('fouls',q.fouls);
-  const si=(r,h)=>{const e=getRole(r);if(e)e.innerHTML=h;};
-  si('inf-2m',`MADE · game <b>${t.p2m}/${t.p2a}</b> · ${p2Pct}%`);
-  si('inf-2x','MISS');
-  si('inf-3m',`MADE · game <b>${t.p3m}/${t.p3a}</b> · ${p3Pct}%`);
-  si('inf-3x','MISS');
-  si('inf-ftm',`MADE · game <b>${t.ftm}/${t.fta}</b> · ${ftPct}%`);
-  si('inf-ftx','MISS');
-  si('inf-reb',`game total <b>${t.reb}</b>`); si('inf-ast',`game total <b>${t.ast}</b>`);
-  si('inf-tov',`game total <b>${t.tov}</b>`); si('inf-stl',`game total <b>${t.stl}</b>`);
-  si('inf-blk',`game total <b>${t.blk}</b>`);
-  const fe=getRole('inf-fouls'); if(fe){fe.innerHTML=`game total <b>${t.fouls}</b>`;fe.style.color=foulColor;}
-  // Update totals bar
-  const tb = document.querySelector(`.ptotals-bar[data-pid="${pid}"]`);
-  if (tb) { tb.outerHTML = buildTotalsBar(p, t); }
-  updTotals(); updQBars();
-}
-
-// ═══ TOTALS ═══
-function updTotals() {
-  let tpts=0,treb=0,tast=0,ttov=0,tfouls=0,tftm=0,tfta=0,tstl=0,tblk=0,tfgm=0,tfga=0,tp3m=0,tp3a=0;
-  players.forEach(p=>{const t=tot(p);tpts+=pts(t);treb+=t.reb;tast+=t.ast;ttov+=t.tov;tfouls+=t.fouls;tftm+=t.ftm;tfta+=t.fta;tstl+=t.stl;tblk+=t.blk;tfgm+=fgm(t);tfga+=fga(t);tp3m+=t.p3m;tp3a+=t.p3a;});
-  const g=id=>document.getElementById(id);
-  g('t-pts').textContent=tpts; g('t-reb').textContent=treb; g('t-ast').textContent=tast; g('t-tov').textContent=ttov;
-  g('t-foul').textContent=tfouls; g('t-ft').textContent=tftm+'/'+tfta; g('t-stl').textContent=tstl; g('t-blk').textContent=tblk;
-  g('t-fgp').textContent=pct(tfgm,tfga)+'%'; g('t-3pp').textContent=pct(tp3m,tp3a)+'%';
-}
-
-function updQBars() {
-  const qp={},cl={1:'var(--q1)',2:'var(--q2)',3:'var(--q3)',4:'var(--q4)',OT:'var(--red)'};
-  for(const q of [1,2,3,4,'OT']){qp[q]=0;players.forEach(p=>qp[q]+=pts(p.q[q]||eq()));}
-  const mx=Math.max(...Object.values(qp),1);
-  const c=document.getElementById('qbars'); c.innerHTML='';
-  for(const q of [1,2,3,4,'OT']){
-    if(q==='OT'&&qp[q]===0)continue;
-    c.innerHTML+=`<div class="qrow"><span class="qrl" style="color:${cl[q]}">${q==='OT'?'OT':'Q'+q}</span><div class="qbw"><div class="qbar" style="width:${(qp[q]/mx)*100}%;background:${cl[q]};opacity:.75"></div></div><span class="qpv">${qp[q]}</span></div>`;
-  }
-}
-
-// ═══ PLAYERS ═══
-function addPlayer() {
-  const num=document.getElementById('np-n').value.trim()||String(players.length+1);
-  const name=document.getElementById('np-nm').value.trim();
-  const phone=document.getElementById('np-ph').value.trim();
-  if(!name){showT('Enter a player name');return;}
-  const p=mkP(num,name,phone);
-  players.push(p);
-  ['np-n','np-nm','np-ph'].forEach(id=>document.getElementById(id).value='');
-  renderAll(); saveRoster(); showT(name+' added');
-  setTimeout(()=>{document.querySelector(`.prow-wrap[data-pid="${p.id}"]`)?.scrollIntoView({behavior:'smooth',block:'center'});},80);
-}
-function delP(id) {
-  if(!confirm('Remove player?'))return;
-  players=players.filter(p=>p.id!==id); shots=shots.filter(s=>s.pid!==id);
-  renderAll(); saveRoster();
-}
-
-// ═══ SAVE / LOAD ═══
-function saveRoster() {
-  localStorage.setItem(RK,JSON.stringify(players.map(p=>({id:p.id,num:p.num,name:p.name,phone:p.phone,q:p.q}))));
-}
-function saveGame() {
-  const home=document.getElementById('ht').value.trim()||'HOME';
-  const away=document.getElementById('at').value.trim()||'AWAY';
-  const date=document.getElementById('gd').value||new Date().toISOString().split('T')[0];
-  let tpts=0,treb=0,tast=0,ttov=0,tftm=0,tfta=0,tfgm_=0,tfga_=0;
-  players.forEach(p=>{const t=tot(p);tpts+=pts(t);treb+=t.reb;tast+=t.ast;ttov+=t.tov;tftm+=t.ftm;tfta+=t.fta;tfgm_+=fgm(t);tfga_+=fga(t);});
-  const qpts={};
-  for(const q of [1,2,3,4,'OT']){qpts[q]=0;players.forEach(p=>qpts[q]+=pts(p.q[q]||eq()));}
-  const gd={id:Date.now(),date,home,away,tpts,treb,tast,ttov,tftm,tfta,tfgm:tfgm_,tfga:tfga_,qpts,
-            players:JSON.parse(JSON.stringify(players)),shots:JSON.parse(JSON.stringify(shots))};
-  const games=getGames();
-  const di=games.findIndex(g=>g.date===date&&g.home===home&&g.away===away);
-  if(di>-1)games[di]=gd;else games.unshift(gd);
-  localStorage.setItem(SK,JSON.stringify(games));
-  showT('✅ Saved — '+home+' vs '+away);
-}
-function loadGame(id) {
-  const g=getGames().find(x=>x.id===id); if(!g)return;
-  document.getElementById('ht').value=g.home; document.getElementById('at').value=g.away; document.getElementById('gd').value=g.date;
-  players=g.players.map(p=>{const n=mkP(p.num,p.name,p.phone||'',p.id);if(p.id>=nextId)nextId=p.id+1;if(p.q)for(const q of [1,2,3,4,'OT'])n.q[q]=migrQ(p.q[q]);return n;});
-  shots=g.shots||[]; closeM('hov'); renderAll(); showT('Loaded: '+g.home+' vs '+g.away);
-}
-function delGame(id) {
-  if(!confirm('Delete this game?'))return;
-  localStorage.setItem(SK,JSON.stringify(getGames().filter(g=>g.id!==id))); openHistory();
-}
-function newGame() {
-  if(!confirm('New game? Unsaved stats will be lost.'))return;
-  players.forEach(p=>{p.q={1:eq(),2:eq(),3:eq(),4:eq(),OT:eq()};});
-  shots=[];CQ=1;
-  document.getElementById('ht').value='HOME'; document.getElementById('at').value='AWAY';
-  document.getElementById('gd').value=new Date().toISOString().split('T')[0];
-  document.querySelectorAll('.q-btn').forEach(b=>b.classList.toggle('on',b.dataset.q==='1'));
-  document.getElementById('qlbl').textContent='Q1 Active';
-  renderAll(); showT('New game — roster kept');
-}
-function exportCSV() {
-  let csv='Player,#,PTS,2PM,2PA,2P%,3PM,3PA,3P%,FTM,FTA,FT%,REB,AST,TOV,FOULS,STL,BLK\n';
-  players.forEach(p=>{const t=tot(p),pv=pts(t);csv+=`"${p.name}",${p.num},${pv},${t.p2m},${t.p2a},${pct(t.p2m,t.p2a)}%,${t.p3m},${t.p3a},${pct(t.p3m,t.p3a)}%,${t.ftm},${t.fta},${pct(t.ftm,t.fta)}%,${t.reb},${t.ast},${t.tov},${t.fouls},${t.stl},${t.blk}\n`;});
-  const home=document.getElementById('ht').value.trim()||'HOME';
-  const away=document.getElementById('at').value.trim()||'AWAY';
-  const date=document.getElementById('gd').value||'game';
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download=`CourtIQ_${home}_vs_${away}_${date}.csv`; a.click();
-  showT('CSV exported!');
-}
-
-// ═══ HISTORY ═══
-function openHistory() {
-  const games=getGames(); const body=document.getElementById('hbody');
-  if(!games.length){body.innerHTML='<div style="text-align:center;padding:40px;color:var(--sub);font-family:\'DM Mono\',monospace;font-size:12px;">No saved games yet.<br><br>Hit 💾 SAVE after each game.</div>';openM('hov');return;}
-  const pmap={};
-  games.forEach(g=>{if(!g.players)return;g.players.forEach(p=>{const key=p.name+'##'+p.num;if(!pmap[key])pmap[key]={name:p.name,num:p.num,games:[]};const t=eq();for(const q of [1,2,3,4,'OT']){const s=migrQ(p.q?p.q[q]:null);for(const k in t)t[k]+=s[k];}pmap[key].games.push({date:g.date,home:g.home,away:g.away,pts:pts(t),reb:t.reb,ast:t.ast,tov:t.tov,fgm_:fgm(t),fga_:fga(t),fgp:pct(fgm(t),fga(t))});});});
-  let html=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--sub);margin-bottom:8px;">SAVED GAMES (${games.length})</div>`;
-  games.forEach(g=>{html+=`<div class="gc"><div class="gct"><div class="gcd">${fmtD(g.date)}</div><div class="gcnm">${g.home} <span style="color:var(--sub)">vs</span> ${g.away}</div></div><div class="gcs"><span>PTS <b>${g.tpts}</b></span><span>REB <b>${g.treb}</b></span><span>AST <b>${g.tast}</b></span><span>FG% <b>${pct(g.tfgm,g.tfga)}%</b></span></div>${g.qpts?`<div style="display:flex;gap:10px;margin-top:4px;">${[1,2,3,4].map(q=>`<span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--sub)">Q${q}: <span style="color:var(--text)">${g.qpts[q]||0}</span></span>`).join('')}</div>`:''}<div class="gca"><button class="gcload" data-gid="${g.id}">📂 Load</button><button class="gcdel" data-gid="${g.id}">🗑 Delete</button></div></div>`;});
-  html+=`<div class="wow"><div class="wow-t">📈 Week-Over-Week Trends</div>`;
-  Object.values(pmap).filter(pd=>pd.games.length>0).forEach(pd=>{
-    const gs6=pd.games.slice(0,6),n=gs6.length,avg=fn=>(gs6.reduce((a,g)=>a+g[fn],0)/n).toFixed(1);
-    const sa=gs6.map(g=>g.pts).reverse(),sm=Math.max(...sa,1);
-    html+=`<div class="ptc"><div class="ptch"><div class="ptcn">#${pd.num}</div><div class="ptcnm">${pd.name}</div><div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="font-family:'DM Mono',monospace;font-size:7px;color:var(--sub);">PTS TREND</span><div class="spark">${sa.map(v=>`<div class="spb" style="height:${Math.max(2,Math.round((v/sm)*16))}px"></div>`).join('')}</div></div></div><table class="ptbl"><thead><tr><th>GAME</th><th>PTS</th><th>REB</th><th>AST</th><th>TOV</th><th>FG%</th><th>▲▼</th></tr></thead><tbody>`;
-    gs6.forEach((g,i)=>{const prev=gs6[i+1],diff=prev?(g.pts-prev.pts):null;const tr=diff===null?'<span style="color:var(--sub)">—</span>':diff>0?`<span class="tup">▲${diff}</span>`:diff<0?`<span class="tdn">▼${Math.abs(diff)}</span>`:'<span class="teq">—</span>';html+=`<tr><td>${g.home} v ${g.away}<br><span style="font-size:8px;color:var(--sub)">${fmtD(g.date)}</span></td><td style="color:var(--accent);font-weight:700">${g.pts}</td><td style="color:var(--blue)">${g.reb}</td><td style="color:var(--green)">${g.ast}</td><td style="color:var(--red)">${g.tov}</td><td>${g.fgp}%</td><td>${tr}</td></tr>`;});
-    if(n>1)html+=`<tr class="av"><td style="color:var(--sub);font-style:italic;font-size:8px;">AVG/${n}G</td><td style="color:var(--accent);font-weight:700">${avg('pts')}</td><td style="color:var(--blue)">${avg('reb')}</td><td style="color:var(--green)">${avg('ast')}</td><td style="color:var(--red)">${avg('tov')}</td><td>${avg('fgp')}%</td><td></td></tr>`;
-    html+=`</tbody></table></div>`;
-  });
-  html+='</div>';
-  body.innerHTML=html;
-  body.querySelectorAll('.gcload').forEach(btn=>btn.addEventListener('click',()=>loadGame(parseInt(btn.dataset.gid))));
-  body.querySelectorAll('.gcdel').forEach(btn=>btn.addEventListener('click',()=>delGame(parseInt(btn.dataset.gid))));
-  openM('hov');
-}
-
-// ═══ SMS ═══
-function openSMS(id) {
-  SMSP=id; SMSM='game';
-  const p=players.find(x=>x.id===id); if(!p)return;
-  document.getElementById('sms-pname').textContent='#'+p.num+' '+p.name.toUpperCase();
-  document.getElementById('sms-ph').value=p.phone||'';
-  document.querySelectorAll('.sms-tab').forEach(t=>t.classList.toggle('on',t.dataset.mode==='game'));
-  updSMSMsg(); openM('sov');
-}
-function setSMSMode(m) {
-  if((m==='season')&&!isPro()){showUpgradeModal('Season average SMS');return;}
-  SMSM=m;
-  document.querySelectorAll('.sms-tab').forEach(t=>t.classList.toggle('on',t.dataset.mode===m));
-  updSMSMsg();
-}
-function updSMSMsg() {
-  const p=players.find(x=>x.id===SMSP); if(!p)return;
-  const home=document.getElementById('ht').value.trim()||'HOME';
-  const away=document.getElementById('at').value.trim()||'AWAY';
-  const date=document.getElementById('gd').value;
-  const t=tot(p),pv=pts(t),tfgm_=fgm(t),tfga_=fga(t);
-  const fgp=pct(tfgm_,tfga_),ftp=pct(t.ftm,t.fta),p3p=pct(t.p3m,t.p3a),p2p=pct(t.p2m,t.p2a);
-  let msg='';
-  if(SMSM==='game'){msg=`🏀 CourtIQ — Game Report\n${fmtD(date)} | ${home} vs ${away}\n\n#${p.num} ${p.name.toUpperCase()}\n──────────────────\nPTS:   ${pv}\nREB:   ${t.reb}\nAST:   ${t.ast}\nTOV:   ${t.tov}\nSTL:   ${t.stl}   BLK: ${t.blk}\nFOULS: ${t.fouls}\n\nSHOOTING\n  2PT: ${t.p2m}/${t.p2a} (${p2p}%)\n  3PT: ${t.p3m}/${t.p3a} (${p3p}%)\n  FT:  ${t.ftm}/${t.fta} (${ftp}%)\n  FG:  ${tfgm_}/${tfga_} (${fgp}%)\n\nKeep grinding! 💪\n— Coach`;}
-  else if(SMSM==='qtr'){const ql=[1,2,3,4,'OT'].filter(q=>q!=='OT'||pts(p.q['OT']||eq())>0).map(q=>`  ${q==='OT'?'OT':'Q'+q}: ${pts(p.q[q]||eq())} pts | ${(p.q[q]||eq()).reb} reb | ${(p.q[q]||eq()).ast} ast`).join('\n');msg=`🏀 CourtIQ — Quarter Breakdown\n${fmtD(date)} | ${home} vs ${away}\n\n#${p.num} ${p.name.toUpperCase()}\n──────────────────\n${ql}\n──────────────────\nTOTAL: ${pv} pts | ${t.reb} reb | ${t.ast} ast\n\nGreat effort! 💪\n— Coach`;}
-  else{const allG=getGames(),pG=[];allG.forEach(g=>{if(!g.players)return;const gp=g.players.find(x=>x.name===p.name&&x.num===p.num);if(!gp)return;const gt=eq();for(const q of [1,2,3,4,'OT']){const s=migrQ(gp.q?gp.q[q]:null);for(const k in gt)gt[k]+=s[k];}pG.push({pts:pts(gt),reb:gt.reb,ast:gt.ast,tov:gt.tov,fgm_:fgm(gt),fga_:fga(gt)});});if(!pG.length){msg='No season data yet.\nSave games first!';}else{const n=pG.length,av=fn=>(pG.reduce((a,g)=>a+g[fn],0)/n).toFixed(1),tFgm=pG.reduce((a,g)=>a+g.fgm_,0),tFga=pG.reduce((a,g)=>a+g.fga_,0);msg=`🏀 CourtIQ — Season Stats\n#${p.num} ${p.name.toUpperCase()}\n${n} games played\n──────────────────\nPPG:  ${av('pts')}\nRPG:  ${av('reb')}\nAPG:  ${av('ast')}\nTOV:  ${av('tov')}\nFG%:  ${pct(tFgm,tFga)}%\n\nCAREER HIGHS\n  PTS: ${Math.max(...pG.map(g=>g.pts))}\n  REB: ${Math.max(...pG.map(g=>g.reb))}\n  AST: ${Math.max(...pG.map(g=>g.ast))}\n\nKeep putting in work! 🔥\n— Coach`;}}
-  document.getElementById('sms-msg').textContent=msg;
-}
-function doSMS() {
-  const p=players.find(x=>x.id===SMSP);
-  const ph=document.getElementById('sms-ph').value.trim();
-  if(p){p.phone=ph;saveRoster();}
-  const msg=document.getElementById('sms-msg').textContent,phone=ph.replace(/\D/g,'');
-  if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){window.location.href=phone?`sms:${phone}?body=${encodeURIComponent(msg)}`:`sms:?body=${encodeURIComponent(msg)}`;}
-  else{navigator.clipboard.writeText(msg).then(()=>showT('📋 Copied — paste into SMS!')).catch(()=>showT('Copy the message above'));}
-  closeM('sov');
-}
-
-// ═══ PDF REPORT GENERATOR ═══
-function buildReportHTML(filterPid) {
-  const home=document.getElementById('ht').value.trim()||'HOME';
-  const away=document.getElementById('at').value.trim()||'AWAY';
-  const date=document.getElementById('gd').value;
-  const targetPlayers = filterPid ? players.filter(p=>p.id===filterPid) : players;
-  const allGames=getGames();
-
-  let html=`<h1>🏀 CourtIQ Game Report</h1>
-    <p style="color:#555;font-size:11px;margin-bottom:12px;">${fmtD(date)} &nbsp;|&nbsp; ${home} vs ${away}</p>`;
-
-  // Team summary
-  let tpts=0,treb=0,tast=0,ttov=0,tfgm_=0,tfga_=0,tp3m=0,tp3a=0;
-  players.forEach(p=>{const t=tot(p);tpts+=pts(t);treb+=t.reb;tast+=t.ast;ttov+=t.tov;tfgm_+=fgm(t);tfga_+=fga(t);tp3m+=t.p3m;tp3a+=t.p3a;});
-  html+=`<h2>Team Summary</h2>
-    <table><tr><th>STAT</th><th>VALUE</th></tr>
-      <tr><td>Team Points</td><td><b>${tpts}</b></td></tr>
-      <tr><td>Rebounds</td><td>${treb}</td></tr>
-      <tr><td>Assists</td><td>${tast}</td></tr>
-      <tr><td>Turnovers</td><td>${ttov}</td></tr>
-      <tr><td>FG%</td><td>${pct(tfgm_,tfga_)}%</td></tr>
-      <tr><td>3P%</td><td>${pct(tp3m,tp3a)}%</td></tr>
-    </table>`;
-
-  // Quarter breakdown
-  const qpts={};for(const q of [1,2,3,4,'OT']){qpts[q]=0;players.forEach(p=>qpts[q]+=pts(p.q[q]||eq()));}
-  html+=`<h2>Quarter Breakdown</h2>
-    <table><tr><th>QTR</th><th>PTS</th></tr>
-      ${[1,2,3,4,'OT'].filter(q=>q!=='OT'||qpts[q]>0).map(q=>`<tr><td>${q==='OT'?'OT':'Q'+q}</td><td>${qpts[q]}</td></tr>`).join('')}
-    </table>`;
-
-  // Player stat rows
-  html+=`<h2>Player Stats</h2>
-    <table>
-      <tr><th>#</th><th>Player</th><th>PTS</th><th>2PT</th><th>3PT</th><th>FT</th><th>REB</th><th>AST</th><th>TOV</th><th>STL</th><th>BLK</th><th>FOULS</th></tr>
-      ${targetPlayers.map(p=>{
-        const t=tot(p),pv=pts(t);
-        return `<tr><td>${p.num}</td><td><b>${p.name}</b></td><td><b>${pv}</b></td><td>${t.p2m}/${t.p2a}<br><small>${pct(t.p2m,t.p2a)}%</small></td><td>${t.p3m}/${t.p3a}<br><small>${pct(t.p3m,t.p3a)}%</small></td><td>${t.ftm}/${t.fta}<br><small>${pct(t.ftm,t.fta)}%</small></td><td>${t.reb}</td><td>${t.ast}</td><td>${t.tov}</td><td>${t.stl}</td><td>${t.blk}</td><td>${t.fouls}</td></tr>`;
-      }).join('')}
-    </table>`;
-
-  // Individual player deep dives
-  targetPlayers.forEach(p=>{
-    const t=tot(p),pv=pts(t);
-    const pGames=[];
-    allGames.forEach(g=>{if(!g.players)return;const gp=g.players.find(x=>x.name===p.name&&x.num===p.num);if(!gp)return;const gt=eq();for(const q of [1,2,3,4,'OT']){const s=migrQ(gp.q?gp.q[q]:null);for(const k in gt)gt[k]+=s[k];}pGames.push({date:g.date,home:g.home,away:g.away,pts:pts(gt),reb:gt.reb,ast:gt.ast,tov:gt.tov});});
-    html+=`<h2>#${p.num} ${p.name}</h2>
-      <table>
-        <tr><th>STAT</th><th>THIS GAME</th>${pGames.length>1?'<th>SEASON AVG</th>':''}</tr>
-        <tr><td>Points</td><td><b>${pv}</b></td>${pGames.length>1?`<td>${(pGames.reduce((a,g)=>a+g.pts,0)/pGames.length).toFixed(1)}</td>`:''}</tr>
-        <tr><td>Rebounds</td><td>${t.reb}</td>${pGames.length>1?`<td>${(pGames.reduce((a,g)=>a+g.reb,0)/pGames.length).toFixed(1)}</td>`:''}</tr>
-        <tr><td>Assists</td><td>${t.ast}</td>${pGames.length>1?`<td>${(pGames.reduce((a,g)=>a+g.ast,0)/pGames.length).toFixed(1)}</td>`:''}</tr>
-        <tr><td>Turnovers</td><td>${t.tov}</td>${pGames.length>1?`<td>${(pGames.reduce((a,g)=>a+g.tov,0)/pGames.length).toFixed(1)}</td>`:''}</tr>
-        <tr><td>2PT FG</td><td>${t.p2m}/${t.p2a} (${pct(t.p2m,t.p2a)}%)</td>${pGames.length>1?'<td>—</td>':''}</tr>
-        <tr><td>3PT FG</td><td>${t.p3m}/${t.p3a} (${pct(t.p3m,t.p3a)}%)</td>${pGames.length>1?'<td>—</td>':''}</tr>
-        <tr><td>Free Throws</td><td>${t.ftm}/${t.fta} (${pct(t.ftm,t.fta)}%)</td>${pGames.length>1?'<td>—</td>':''}</tr>
-      </table>`;
-  });
-
-  html+=`<p style="margin-top:20px;font-size:10px;color:#aaa;text-align:center;">Generated by CourtIQ &nbsp;·&nbsp; ${new Date().toLocaleDateString()}</p>`;
-  return html;
-}
-
-function openReportSheet() {
-  document.getElementById('report-content').innerHTML = `<div class="report-preview">${buildReportHTML(null)}</div>`;
-  openM('rov');
-}
-function openReportForPlayer(pid) {
-  document.getElementById('report-content').innerHTML = `<div class="report-preview">${buildReportHTML(pid)}</div>`;
-  openM('rov');
-}
-function smsAllPlayers() {
-  const phones=players.filter(p=>p.phone).map(p=>p.phone);
-  if(!phones.length){showT('No player phone numbers saved');return;}
-  const t=players[0]?tot(players[0]):null;
-  showT('SMS reports queued for '+phones.length+' player(s)');
-  closeM('rov');
-  openSMS(players[0]?.id);
-}
-
-// ═══ SHOT CHART ═══
-function setST(type){ST=type;document.querySelectorAll('.stb').forEach(b=>b.classList.toggle('on',b.dataset.type===type));}
-function updShotSel(){
-  const sel=document.getElementById('shotsel'),cur=sel.value;
-  sel.innerHTML='<option value="all">All Players</option>';
-  players.forEach(p=>{sel.innerHTML+=`<option value="${p.id}">${p.num} ${p.name}</option>`;});
-  if([...sel.options].some(o=>o.value===cur))sel.value=cur;
-  updShotNote();
-}
-function updShotNote(){
-  const sel=document.getElementById('shotsel');
-  const note=document.getElementById('shot-sync-note');
-  if(!note)return;
-  if(sel.value==='all'){
-    note.style.color='var(--sub)';
-    note.innerHTML='Select a player above → clicks auto-update their stats';
-  } else {
-    const p=players.find(x=>x.id===parseInt(sel.value));
-    note.innerHTML=`<span class="shot-link-badge">⚡ LIVE</span> Clicks add to <b style="color:var(--text)">${p?p.name:'player'}</b>'s stats`;
-    note.style.color='var(--green)';
-  }
-}
-const courtEl=document.getElementById('court');
-function getXY(e){const r=courtEl.getBoundingClientRect();let cx=e.clientX,cy=e.clientY;if(e.touches&&e.touches.length){cx=e.touches[0].clientX;cy=e.touches[0].clientY;}else if(e.changedTouches&&e.changedTouches.length){cx=e.changedTouches[0].clientX;cy=e.changedTouches[0].clientY;}return{x:Math.round(((cx-r.left)/r.width)*400),y:Math.round(((cy-r.top)/r.height)*360)};}
-// 3-point line approximation: arc center (200,140) radius ~174 + corner zones
-function is3pt(x, y) {
-  // Corner 3s: x<28 or x>372 within first 140px
-  if ((x < 28 || x > 372) && y < 140) return true;
-  // Arc: distance from basket (200,17) > 174 SVG units
-  const dx = x - 200, dy = y - 17;
-  return Math.sqrt(dx*dx + dy*dy) > 174;
-}
-
-function plotShot(e){
-  if(e.target.tagName==='circle'||e.target.tagName==='text')return;
-  const{x,y}=getXY(e);
-  const selPid = document.getElementById('shotsel').value;
-  const shot={x,y,type:ST,quarter:CQ,pid:selPid==='all'?null:parseInt(selPid)};
-  shots.push(shot);
-  addDot(shot,document.getElementById('sdots'));
-  updShotStats();
-
-  // ── Sync player stats ──
-  if (shot.pid !== null && shot.pid !== undefined) {
-    const p = players.find(x => x.id === shot.pid);
-    if (p) {
-      if (!p.q[CQ]) p.q[CQ] = eq();
-      const q = p.q[CQ];
-      let pointDelta = 0;
-      if (ST === 'ft') {
-        q.ftm++; q.fta++; pointDelta = 1;
-        showT('FT made → ' + p.name);
-      } else if (ST === 'made') {
-        const three = is3pt(x, y);
-        if (three) { q.p3m++; q.p3a++; pointDelta = 3; showT('3PT made → ' + p.name); }
-        else { q.p2m++; q.p2a++; pointDelta = 2; showT('2PT made → ' + p.name); }
-      } else if (ST === 'miss') {
-        const three = is3pt(x, y);
-        if (three) { q.p3a++; showT('3PT miss → ' + p.name); }
-        else { q.p2a++; showT('2PT miss → ' + p.name); }
-      }
-      saveRoster();
-      fastUpd(shot.pid, pointDelta > 0);
-    }
-  }
-}
-function addDot(shot,g){const cl={made:'#00C853',miss:'#FF3B30',ft:'#BF5AF2'}[shot.type];const grp=document.createElementNS('http://www.w3.org/2000/svg','g');const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',shot.x);c.setAttribute('cy',shot.y);c.setAttribute('r','7');c.setAttribute('fill',cl+'55');c.setAttribute('stroke',cl);c.setAttribute('stroke-width','2');const txt=document.createElementNS('http://www.w3.org/2000/svg','text');txt.setAttribute('x',shot.x);txt.setAttribute('y',shot.y+4);txt.setAttribute('text-anchor','middle');txt.setAttribute('font-size','8');txt.setAttribute('fill',cl);txt.setAttribute('font-family','DM Mono');txt.setAttribute('font-weight','700');txt.textContent=shot.type==='made'?'●':shot.type==='ft'?'F':'✕';grp.appendChild(c);grp.appendChild(txt);grp.style.cursor='pointer';grp.addEventListener('contextmenu',e=>{e.preventDefault();const i=shots.indexOf(shot);if(i>-1)shots.splice(i,1);g.removeChild(grp);updShotStats();});g.appendChild(grp);}
-function reShot(){const g=document.getElementById('sdots');g.innerHTML='';shots.forEach(s=>addDot(s,g));updShotStats();}
-function updShotStats(){const fg=shots.filter(s=>s.type!=='ft');const mk=fg.filter(s=>s.type==='made').length,at=fg.length;document.getElementById('cfp').textContent=(at>0?Math.round((mk/at)*100):0)+'%';document.getElementById('cmk').textContent=mk;document.getElementById('cat').textContent=at;}
-
-
-// ═══ SHARE SYSTEM ═══
-const SHARE_URL = window.location.href.split('?')[0];
-
-function openShare() {
-  document.getElementById('share-url-display').textContent = SHARE_URL;
-  drawQR(SHARE_URL);
-  openM('shov');
-}
-
-// Wire share button and modal close
-document.getElementById('btn-share').addEventListener('click', openShare);
-document.getElementById('shov').addEventListener('click', e => { if(e.target.id==='shov') closeM('shov'); });
-document.getElementById('shov-close').addEventListener('click', () => closeM('shov'));
-
-// Native share (Web Share API — works on mobile Safari & Chrome)
-document.getElementById('sc-native').addEventListener('click', async () => {
-  const data = {
-    title: 'CourtIQ — Basketball Stat Tracker',
-    text: 'Check out CourtIQ — a free basketball stat tracker for coaches. Works on any phone, no download needed!',
-    url: SHARE_URL
-  };
-  if (navigator.share) {
-    try { await navigator.share(data); showT('Shared!'); }
-    catch(e) { if (e.name !== 'AbortError') copyToClipboard(SHARE_URL); }
-  } else {
-    copyToClipboard(SHARE_URL);
-  }
-});
-
-// Copy link
-document.getElementById('sc-copy').addEventListener('click', () => copyToClipboard(SHARE_URL));
-document.getElementById('copy-link-btn').addEventListener('click', () => copyToClipboard(SHARE_URL));
-
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text)
-    .then(() => { showT('🔗 Link copied! Paste it anywhere.'); })
-    .catch(() => {
-      const ta = document.createElement('textarea');
-      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta); ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      showT('🔗 Link copied!');
-    });
-}
-
-// Text / SMS share
-document.getElementById('sc-sms').addEventListener('click', () => {
-  const msg = encodeURIComponent(
-    'Hey! Check out CourtIQ — a free basketball stat tracker for coaches. Works on your phone instantly, no app download needed: ' + SHARE_URL
-  );
-  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    window.location.href = 'sms:?body=' + msg;
-  } else {
-    copyToClipboard(SHARE_URL);
-    showT('📋 Link copied — paste into your messages app');
-  }
-});
-
-// Email share
-document.getElementById('sc-email').addEventListener('click', () => {
-  const subject = encodeURIComponent('CourtIQ — Free Basketball Stat Tracker for Coaches');
-  const body = encodeURIComponent(
-    'Hi,\n\nI wanted to share this free basketball stat tracker I\'ve been using — it\'s called CourtIQ.\n\n' +
-    'Works on any phone or tablet, no app download needed. Just open the link and start tracking stats right away:\n\n' +
-    SHARE_URL + '\n\n' +
-    'Features:\n' +
-    '• Track 2-PT, 3-PT, free throws, rebounds, assists, turnovers, steals, blocks & fouls\n' +
-    '• Live quarter-by-quarter breakdown\n' +
-    '• Interactive shot chart\n' +
-    '• Send stat reports directly to players via SMS\n' +
-    '• Works offline after first load\n\n' +
-    'Hope it helps your team!\n'
-  );
-  window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
-});
-
-// Download the HTML file
-document.getElementById('sc-download').addEventListener('click', () => {
-  fetch(window.location.href)
-    .then(r => r.blob())
-    .then(blob => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'CourtIQ.html';
-      a.click();
-      showT('📥 Downloaded! Open CourtIQ.html in any browser.');
-    })
-    .catch(() => {
-      // Fallback: just copy the link
-      copyToClipboard(SHARE_URL);
-      showT('📋 Link copied — bookmark it to save!');
-    });
-});
-
-// Home screen instructions
-document.getElementById('sc-homescreen').addEventListener('click', () => {
-  const iOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const android = /Android/i.test(navigator.userAgent);
-  if (iOS) {
-    showT('In Safari: tap Share (box↑) → Add to Home Screen');
-  } else if (android) {
-    if (deferredInstallPrompt) {
-      deferredInstallPrompt.prompt();
-    } else {
-      showT('In Chrome: tap ⋮ menu → Add to Home Screen');
-    }
-  } else {
-    showT('In Chrome: click ⋮ menu → Install CourtIQ');
-  }
-});
-
-// ── QR CODE GENERATOR (pure canvas, no library needed) ──
-// Uses a simplified QR-like visual. For production, swap in a real QR lib.
-function drawQR(url) {
-  const canvas = document.getElementById('qr-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const size = 180;
-  ctx.clearRect(0, 0, size, size);
-
-  // Use the QRCode library if available, else draw placeholder
-  if (window.QRCode) {
-    canvas.width = size; canvas.height = size;
-    QRCode.toCanvas(canvas, url, { width: size, margin: 1, color: { dark: '#000000', light: '#ffffff' } }, err => {
-      if (err) drawQRPlaceholder(ctx, size, url);
-    });
-  } else {
-    drawQRPlaceholder(ctx, size, url);
-  }
-}
-
-function drawQRPlaceholder(ctx, size, url) {
-  // White background
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, size, size);
-
-  // Generate deterministic pattern from URL string
-  const hash = [...url].reduce((h, c) => (Math.imul(31, h) + c.charCodeAt(0)) | 0, 0);
-  const cells = 21;
-  const cell = Math.floor(size / cells);
-  const offset = Math.floor((size - cells * cell) / 2);
-
-  ctx.fillStyle = '#000000';
-
-  // Finder patterns (3 corners)
-  const drawFinder = (r, c) => {
-    ctx.fillRect(offset + c*cell, offset + r*cell, 7*cell, 7*cell);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(offset + (c+1)*cell, offset + (r+1)*cell, 5*cell, 5*cell);
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(offset + (c+2)*cell, offset + (r+2)*cell, 3*cell, 3*cell);
-  };
-  drawFinder(0, 0); drawFinder(0, 14); drawFinder(14, 0);
-
-  // Data cells — deterministic from hash
-  for (let r = 0; r < cells; r++) {
-    for (let c = 0; c < cells; c++) {
-      // Skip finder pattern areas
-      if ((r<8&&c<8)||(r<8&&c>12)||(r>12&&c<8)) continue;
-      const bit = ((hash >> ((r * cells + c) % 32)) & 1) ^ ((r + c) & 1 ? 1 : 0);
-      if (bit) ctx.fillRect(offset + c*cell, offset + r*cell, cell, cell);
-    }
-  }
-
-  // Center label
-  ctx.fillStyle = 'rgba(255,107,0,0.9)';
-  ctx.fillRect(size/2 - 28, size/2 - 10, 56, 20);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 10px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('COURTIQ', size/2, size/2);
-}
-
-// Load real QR library async — falls back to placeholder if unavailable
-(function loadQRLib() {
-  const script = document.createElement('script');
-  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-  script.onload = () => {
-    // qrcodejs sets window.QRCode — wrap it for our toCanvas API
-    if (window.QRCode && typeof window.QRCode === 'function') {
-      const OrigQR = window.QRCode;
-      window.QRCode = {
-        toCanvas: (canvas, text, opts, cb) => {
-          try {
-            const tmp = document.createElement('div');
-            tmp.style.cssText = 'position:absolute;left:-9999px;top:-9999px;';
-            document.body.appendChild(tmp);
-            new OrigQR(tmp, {
-              text, width: opts.width, height: opts.width,
-              colorDark: opts.color.dark, colorLight: opts.color.light,
-              correctLevel: OrigQR.CorrectLevel ? OrigQR.CorrectLevel.M : 1
-            });
-            setTimeout(() => {
-              const src = tmp.querySelector('canvas') || tmp.querySelector('img');
-              if (src) {
-                canvas.width = opts.width; canvas.height = opts.width;
-                const ctx = canvas.getContext('2d');
-                if (src.tagName === 'CANVAS') {
-                  ctx.drawImage(src, 0, 0, opts.width, opts.width);
-                } else {
-                  const i = new Image(); i.onload = () => ctx.drawImage(i, 0, 0, opts.width, opts.width);
-                  i.src = src.src;
-                }
-              }
-              document.body.removeChild(tmp);
-              if (cb) cb(null);
-            }, 100);
-          } catch(e) { if (cb) cb(e); }
-        }
-      };
-    }
-  };
-  script.onerror = () => {}; // silently use placeholder
-  document.head.appendChild(script);
-})();
-
-// ═══ MODALS ═══
-function openM(id){document.getElementById(id).classList.add('open');}
-function closeM(id){document.getElementById(id).classList.remove('open');}
-function showT(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('show'),2500);}
-</script>
-
-<!-- ── SHARE MODAL ── -->
-<div class="overlay" id="shov">
-  <div class="sheet" style="max-width:500px;">
-    <div class="sh-handle"></div>
-    <div class="sh-hdr"><div class="sh-title">🔗 SHARE COURTIQ</div><div class="sh-x" id="shov-close">✕</div></div>
-    <div class="sh-body">
-
-      <div class="share-grid">
-        <div class="share-card primary" id="sc-native">
-          <span class="share-card-icon">📤</span>
-          <span class="share-card-label">SHARE APP</span>
-          <span class="share-card-sub">Send via Messages,<br>AirDrop, Email &amp; more</span>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="logo">CIQ</div>
+          <div class="brand-copy">
+            <h1>CourtIQ Elite</h1>
+            <p>Modular upgrade pack · faster to maintain and expand</p>
+          </div>
         </div>
-        <div class="share-card blue" id="sc-copy">
-          <span class="share-card-icon">🔗</span>
-          <span class="share-card-label">COPY LINK</span>
-          <span class="share-card-sub">Copy URL to<br>paste anywhere</span>
+
+        <div class="meta">
+          <div class="field"><label>Home</label><input id="homeTeam" value="HOME" maxlength="14"></div>
+          <div class="field"><label>Away</label><input id="awayTeam" value="AWAY" maxlength="14"></div>
+          <div class="field"><label>Date</label><input id="gameDate" type="date"></div>
         </div>
-        <div class="share-card green" id="sc-sms">
-          <span class="share-card-icon">💬</span>
-          <span class="share-card-label">TEXT IT</span>
-          <span class="share-card-sub">Send a text with<br>the download link</span>
-        </div>
-        <div class="share-card purple" id="sc-email">
-          <span class="share-card-icon">📧</span>
-          <span class="share-card-label">EMAIL IT</span>
-          <span class="share-card-sub">Send via email<br>with instructions</span>
+
+        <div class="actions">
+          <button class="btn btn-success" id="saveBtn">Save Game</button>
+          <button class="btn btn-secondary" id="newBtn">New Game</button>
+          <button class="btn btn-secondary" id="undoBtn">Undo</button>
+          <button class="btn btn-secondary" id="csvBtn">Export CSV</button>
+          <button class="btn btn-secondary" id="reportBtn">Season Report</button>
         </div>
       </div>
 
-      <div class="share-divider">
-        <div class="share-divider-line"></div>
-        <span class="share-divider-text">OR SHOW THEM THE QR CODE</span>
-        <div class="share-divider-line"></div>
-      </div>
-
-      <div class="qr-wrap">
-        <canvas id="qr-canvas" class="qr-canvas" width="180" height="180"></canvas>
-        <div class="qr-label">Scan with any camera to open CourtIQ<br>Works on iPhone, Android &amp; any browser</div>
-      </div>
-
-      <div class="share-link-box">
-        <span class="share-link-url" id="share-url-display"></span>
-        <button class="copy-link-btn" id="copy-link-btn">COPY</button>
-      </div>
-
-      <div class="share-divider">
-        <div class="share-divider-line"></div>
-        <span class="share-divider-text">DOWNLOAD &amp; INSTALL</span>
-        <div class="share-divider-line"></div>
-      </div>
-
-      <div class="share-grid">
-        <div class="share-card" id="sc-download">
-          <span class="share-card-icon">⬇️</span>
-          <span class="share-card-label">DOWNLOAD FILE</span>
-          <span class="share-card-sub">Save the .html file<br>and open anytime offline</span>
+      <div class="controls">
+        <div class="segmented" id="modeTabs">
+          <button class="seg active" data-mode="live">Live Mode</button>
+          <button class="seg" data-mode="advanced">Advanced Mode</button>
         </div>
-        <div class="share-card" id="sc-homescreen">
-          <span class="share-card-icon">📱</span>
-          <span class="share-card-label">ADD TO HOME</span>
-          <span class="share-card-sub">iPhone: Share → Add to<br>Home Screen in Safari</span>
+
+        <div class="quarter-strip" id="quarterTabs">
+          <button class="qbtn active" data-q="1">Q1</button>
+          <button class="qbtn" data-q="2">Q2</button>
+          <button class="qbtn" data-q="3">Q3</button>
+          <button class="qbtn" data-q="4">Q4</button>
+          <button class="qbtn" data-q="OT">OT</button>
         </div>
+
+        <div class="status-chip" id="autosaveStatus">Autosave ready</div>
       </div>
 
-      <div class="share-note">
-        CourtIQ is a free web app — no App Store needed.<br>
-        Works on any phone, tablet, or computer with a browser.<br>
-        <span style="color:var(--accent)">Share the link and they can use it instantly.</span>
-      </div>
+      <section class="summary">
+        <div class="kpi"><div class="label">Team Points</div><div class="value" id="teamPts">0</div></div>
+        <div class="kpi"><div class="label">Rebounds</div><div class="value" id="teamReb">0</div></div>
+        <div class="kpi"><div class="label">Assists</div><div class="value" id="teamAst">0</div></div>
+        <div class="kpi"><div class="label">Turnovers</div><div class="value" id="teamTov">0</div></div>
+        <div class="kpi"><div class="label">FG%</div><div class="value" id="teamFg">0%</div></div>
+        <div class="kpi"><div class="label">3PT%</div><div class="value" id="team3p">0%</div></div>
+      </section>
+    </header>
 
+    <main class="main">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Roster & Live Stats</h2>
+            <p>Cleaner interactions, modular logic, and better future upgrade headroom.</p>
+          </div>
+          <div class="small-actions">
+            <button class="btn btn-ghost" id="toggleModeBtn">Toggle Detail Level</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="players" id="players"></div>
+
+          <div class="add-player">
+            <input id="addNum" placeholder="Jersey #">
+            <input id="addName" placeholder="Player name">
+            <input id="addPhone" placeholder="Phone (optional)" class="wide">
+            <button class="btn btn-primary wide" id="addBtn">Add Player</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="side-stack">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Bench Insights</h2>
+              <p>Current game reads plus simple coach nudges.</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="insights" id="insights"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Shot Chart</h2>
+              <p>Tap the court. Shots sync directly into player stats.</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="shot-controls">
+              <select class="select" id="shotPlayer"></select>
+              <button class="pill made active" data-shot="made">Made 2PT</button>
+              <button class="pill miss" data-shot="miss">Miss 2PT</button>
+              <button class="pill ft" data-shot="three">Made 3PT</button>
+              <button class="pill ft" data-shot="ft">Made FT</button>
+            </div>
+            <div class="court-wrap">
+              <svg id="court" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="360" fill="#c69966"/>
+                <rect x="140" y="0" width="120" height="140" fill="#b18354" stroke="#8a6535" stroke-width="2"/>
+                <rect x="150" y="0" width="100" height="110" fill="none" stroke="#8a6535" stroke-width="2"/>
+                <circle cx="200" cy="110" r="55" fill="none" stroke="#8a6535" stroke-width="2"/>
+                <rect x="185" y="5" width="30" height="4" fill="#8a6535"/>
+                <circle cx="200" cy="17" r="7" fill="none" stroke="#7a5530" stroke-width="2.5"/>
+                <path d="M 178 17 A 22 22 0 0 1 222 17" fill="none" stroke="#8a6535" stroke-width="1.5"/>
+                <path d="M 28 0 L 28 140 A 174 174 0 0 0 372 140 L 372 0" fill="none" stroke="#8a6535" stroke-width="2.5"/>
+                <line x1="0" y1="360" x2="400" y2="360" stroke="#8a6535" stroke-width="1" stroke-dasharray="4,4"/>
+                <circle cx="200" cy="360" r="44" fill="none" stroke="#8a6535" stroke-width="1.5" stroke-dasharray="4,4"/>
+                <g id="shotLayer"></g>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Saved Games</h2>
+              <p>Local-first history and season-level summaries.</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="history" id="history"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div class="footerbar">
+      <button class="btn btn-success" id="saveBtnMobile">Save</button>
+      <button class="btn btn-secondary" id="newBtnMobile">New</button>
+      <button class="btn btn-secondary" id="undoBtnMobile">Undo</button>
     </div>
   </div>
-</div>
 
+  <dialog id="welcomeDialog">
+    <div class="modal">
+      <h3>Elite modular upgrade</h3>
+      <p>This version separates state, stat logic, and UI rendering so the program is easier to scale.</p>
+      <ul>
+        <li>Undo support for fast correction on the sideline</li>
+        <li>Autosave status indicator</li>
+        <li>Modular JS architecture for future sync, roles, and backend support</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="startBtn">Start Tracking</button>
+        <button class="btn btn-secondary" id="dismissWelcomeBtn">Skip</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="reportDialog">
+    <div class="modal">
+      <h3>Season Report</h3>
+      <p id="reportSummary"></p>
+      <div id="reportTable" style="max-height:46vh; overflow:auto; margin-bottom:14px;"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="printReportBtn">Print / Save PDF</button>
+        <button class="btn btn-secondary" id="closeReportBtn">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="./js/app.js"></script>
 </body>
 </html>
