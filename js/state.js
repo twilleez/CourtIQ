@@ -1,4 +1,3 @@
-
 export const STORAGE_KEY = "courtiq_elite_modular_state_v1";
 export const WELCOME_KEY = "courtiq_elite_modular_welcome_seen";
 
@@ -10,7 +9,8 @@ export const state = {
   players: [],
   shots: [],
   games: [],
-  historyStack: []
+  historyStack: [],
+  isPro: false
 };
 
 export function eq(){
@@ -29,7 +29,8 @@ export function snapshot(){
     nextId: state.nextId,
     players: state.players,
     shots: state.shots,
-    games: state.games
+    games: state.games,
+    isPro: state.isPro
   });
 }
 
@@ -67,6 +68,7 @@ export function loadState(setMeta){
     state.players = Array.isArray(raw.players) ? raw.players : [];
     state.shots = Array.isArray(raw.shots) ? raw.shots : [];
     state.games = Array.isArray(raw.games) ? raw.games : [];
+    state.isPro = raw.isPro || localStorage.getItem("courtiq_pro_demo") === "1";
     setMeta(raw.meta || {});
   }catch(err){
     console.error(err);
