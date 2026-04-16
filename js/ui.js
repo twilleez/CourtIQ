@@ -1,4 +1,3 @@
-
 import { state } from "./state.js";
 import { activeQuarterKey, totalPlayer, totalTeam, pointsOf, fgm, fga, pct, benchInsights } from "./statsEngine.js";
 
@@ -26,6 +25,8 @@ export function render(onAdjust, onDelete, onCopy, onLoadGame, onDeleteGame){
   renderInsights();
   renderShotPlayerOptions();
   renderShots();
+  renderShotStats();
+  renderShotSyncNote();
   renderHistory(onLoadGame, onDeleteGame);
 }
 
@@ -44,6 +45,7 @@ function renderSummary(){
   byId("teamFg").textContent = `${pct(fgm(t), fga(t))}%`;
   byId("team3p").textContent = `${pct(t.p3m, t.p3a)}%`;
 }
+
 function renderPlayers(onAdjust, onDelete, onCopy){
   const container = byId("players");
   if(!state.players.length){
@@ -54,6 +56,9 @@ function renderPlayers(onAdjust, onDelete, onCopy){
   container.innerHTML = state.players.map(player=>{
     const total = totalPlayer(player);
     const quarterStats = player.q[activeQuarterKey()];
+    const p2Pct = pct(total.p2m, total.p2a);
+    const p3Pct = pct(total.p3m, total.p3a);
+    const ftPct  = pct(total.ftm, total.fta);
     return `
       <article class="player-card">
         <div class="player-top">
@@ -61,13 +66,28 @@ function renderPlayers(onAdjust, onDelete, onCopy){
             <div class="badge">#${escapeHtml(player.num)}</div>
             <div>
               <div class="player-name">${escapeHtml(player.name)}</div>
-              <div class="player-sub">${player.phone ? escapeHtml(player.phone) : "No phone saved"} · Quarter ${String(activeQuarterKey())}</div>
+              <div class="player-sub">${player.phone ? escapeHtml(player.phone) : "No phone"} · Q${String(activeQuarterKey())}</div>
             </div>
           </div>
           <div class="points">
             <div class="label">Points</div>
             <div class="value">${pointsOf(total)}</div>
           </div>
+        </div>
+
+        <!-- Game Totals Bar -->
+        <div class="game-totals-bar">
+          <div class="gtb-cell"><span class="gtb-v" style="color:var(--accent)">${pointsOf(total)}</span><span class="gtb-l">PTS</span></div>
+          <div class="gtb-cell"><span class="gtb-v" style="color:#60a5fa">${total.p2m}/${total.p2a}</span><span class="gtb-l">2PT · ${p2Pct}%</span></div>
+          <div class="gtb-cell"><span class="gtb-v" style="color:#f97316">${total.p3m}/${total.p3a}</span><span class="gtb-l">3PT · ${p3Pct}%</span></div>
+          <div class="gtb-cell"><span class="gtb-v" style="color:#a78bfa">${total.ftm}/${total.fta}</span><span class="gtb-l">FT · ${ftPct}%</span></div>
+          <div class="gtb-sep"></div>
+          <div class="gtb-cell"><span class="gtb-v" style="color:#60a5fa">${total.reb}</span><span class="gtb-l">REB</span></div>
+          <div class="gtb-cell"><span class="gtb-v" style="color:#22c55e">${total.ast}</span><span class="gtb-l">AST</span></div>
+          <div class="gtb-cell"><span class="gtb-v" style="color:#ef4444">${total.tov}</span><span class="gtb-l">TOV</span></div>
+          <div class="gtb-cell"><span class="gtb-v" style="color:#22d3ee">${total.stl}</span><span class="gtb-l">STL</span></div>
+          <div class="gtb-cell"><span class="gtb-v" style="color:#a78bfa">${total.blk}</span><span class="gtb-l">BLK</span></div>
+          <div class="gtb-cell"><span class="gtb-v" style="color:${total.fouls>=5?'#ef4444':total.fouls>=4?'#fbbf24':'var(--muted)'}">${total.fouls}</span><span class="gtb-l">FOULS</span></div>
         </div>
 
         <div class="live-grid">
@@ -97,7 +117,7 @@ function renderPlayers(onAdjust, onDelete, onCopy){
         </div>` : ""}
 
         <div class="small-actions" style="margin-top:12px">
-          <button class="btn btn-secondary sms-btn" data-player="${player.id}">Copy Summary</button>
+          <button class="btn btn-secondary sms-btn" data-player="${player.id}">📋 Copy Summary</button>
           <button class="btn btn-danger delete-btn" data-player="${player.id}">Remove</button>
         </div>
       </article>`;
@@ -109,6 +129,7 @@ function renderPlayers(onAdjust, onDelete, onCopy){
   qsa(".delete-btn").forEach(btn=>btn.addEventListener("click",()=>onDelete(Number(btn.dataset.player))));
   qsa(".sms-btn").forEach(btn=>btn.addEventListener("click",()=>onCopy(Number(btn.dataset.player))));
 }
+
 function statTile(id, stat, label, value){
   return `
     <div class="stat-tile">
@@ -142,16 +163,58 @@ function renderInsights(){
 function renderShotPlayerOptions(){
   const sel = byId("shotPlayer");
   const current = sel.value;
-  sel.innerHTML = state.players.map(p=>`<option value="${p.id}">#${escapeHtml(p.num)} ${escapeHtml(p.name)}</option>`).join("");
+  sel.innerHTML = `<option value="">— Pick player —</option>` + state.players.map(p=>`<option value="${p.id}">#${escapeHtml(p.num)} ${escapeHtml(p.name)}</option>`).join("");
   if(state.players.some(p=>String(p.id)===String(current))) sel.value = current;
+}
+function renderShotSyncNote(){
+  const note = byId("shotSyncNote");
+  if(!note) return;
+  const sel = byId("shotPlayer");
+  const pid = Number(sel?.value);
+  if(pid){
+    const p = state.players.find(x=>x.id===pid);
+    note.innerHTML = `<span class="live-badge">⚡ LIVE</span> Clicks add to <strong>${p ? escapeHtml(p.name) : "player"}</strong>'s stats`;
+    note.style.color = "#22c55e";
+  } else {
+    note.textContent = "Select a player · clicks auto-update their stats";
+    note.style.color = "";
+  }
 }
 function renderShots(){
   const g = byId("shotLayer");
   g.innerHTML = state.shots.map(shot=>{
-    const color = shot.type === "made" ? "#22c55e" : shot.type === "miss" ? "#ef4444" : shot.type === "three" ? "#60a5fa" : "#fbbf24";
-    return `<circle cx="${shot.x}" cy="${shot.y}" r="5.3" fill="${color}" stroke="rgba(0,0,0,.28)" stroke-width="1.1"></circle>`;
+    // Color by detected zone: 2pt=blue, 3pt=orange, ft=gold; miss=red
+    let color;
+    if(shot.type === "miss")      color = "#ef4444";
+    else if(shot.type === "ft")   color = "#fbbf24";
+    else if(shot.detectedAs === "3pt") color = "#f97316";
+    else                          color = "#22c55e";
+    const symbol = shot.type === "miss" ? "✕" : shot.type === "ft" ? "F" : shot.detectedAs === "3pt" ? "3" : "2";
+    return `<g>
+      <circle cx="${shot.x}" cy="${shot.y}" r="8" fill="${color}44" stroke="${color}" stroke-width="1.8"/>
+      <text x="${shot.x}" y="${shot.y+3.5}" text-anchor="middle" font-size="7.5" fill="${color}" font-family="DM Mono,monospace" font-weight="700">${symbol}</text>
+    </g>`;
   }).join("");
   qsa(".pill[data-shot]").forEach(btn=>btn.classList.toggle("active", btn.dataset.shot === state.shotMode));
+}
+function renderShotStats(){
+  // Aggregate shots for selected player (or all)
+  const pid = Number(byId("shotPlayer")?.value);
+  const relevant = pid ? state.shots.filter(s=>s.playerId===pid) : state.shots;
+  const made2 = relevant.filter(s=>s.type==="made"&&s.detectedAs==="2pt").length;
+  const att2  = relevant.filter(s=>s.type!=="ft"&&s.detectedAs==="2pt").length;
+  const made3 = relevant.filter(s=>s.type==="made"&&s.detectedAs==="3pt").length;
+  const att3  = relevant.filter(s=>s.type!=="ft"&&s.detectedAs==="3pt").length;
+  const madeFt = relevant.filter(s=>s.type==="ft").length;
+  const attFt  = madeFt; // FT mode always logs makes
+  const totalMade = made2 + made3 + madeFt;
+  const totalAtt  = att2 + att3 + attFt;
+  const fg = totalAtt > 0 ? Math.round((totalMade/totalAtt)*100) : 0;
+  const ss = (m,a) => `${m}/${a}`;
+  byId("ss-fg").textContent = fg + "%";
+  byId("ss-2pt").textContent = ss(made2, att2);
+  byId("ss-3pt").textContent = ss(made3, att3);
+  byId("ss-ft").textContent = ss(madeFt, attFt);
 }
 function renderHistory(onLoadGame, onDeleteGame){
   const wrap = byId("history");
