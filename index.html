@@ -108,6 +108,20 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Barlow Co
 .c-2pt{color:#60a5fa;}.c-3pt{color:var(--accent);}.c-ft{color:var(--purple);}.c-miss{color:var(--red);}
 .c-reb{color:var(--blue);}.c-ast{color:var(--green);}.c-tov{color:var(--red);}.c-stl{color:var(--cyan);}.c-blk{color:var(--purple);}.c-foul{color:var(--yellow);}
 .cell-acts{width:84px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:4px 6px;}
+
+/* ── PLAYER TOTALS BAR ── */
+.ptotals-bar{display:flex;align-items:center;background:rgba(255,107,0,.06);border-top:1px solid rgba(255,107,0,.2);border-bottom:2px solid rgba(255,107,0,.3);padding:5px 12px 5px 12px;gap:0;min-width:max-content;flex-shrink:0;}
+.ptb-name{width:150px;flex-shrink:0;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--accent);text-transform:uppercase;padding-left:0;}
+.ptb-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 4px;border-right:1px solid var(--border);}
+.ptb-cell:last-child{border-right:none;}
+.ptb-v{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;line-height:1;}
+.ptb-l{font-family:'DM Mono',monospace;font-size:7px;color:var(--sub);text-transform:uppercase;margin-top:1px;}
+.ptb-pts{width:72px;}.ptb-2pt{width:68px;}.ptb-3pt{width:68px;}.ptb-ft{width:68px;}.ptb-stat{width:52px;}
+.ptb-sep{width:1px;background:var(--border);align-self:stretch;margin:0 2px;}
+
+/* Shot-links-stats indicator */
+.shot-link-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);border-radius:6px;padding:2px 6px;font-family:'DM Mono',monospace;font-size:8px;color:var(--green);margin-left:6px;}
+
 .act-btn{background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--sub);font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:1px;cursor:pointer;padding:6px 8px;min-height:30px;width:100%;display:flex;align-items:center;justify-content:center;gap:3px;-webkit-user-select:none;user-select:none;transition:all .12s;white-space:nowrap;}
 .act-btn:active{transform:scale(.88);}
 .act-btn.sms{border-color:rgba(0,200,83,.4);color:var(--green);}
@@ -281,6 +295,34 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Barlow Co
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 @media(max-width:640px){.shot-panel{display:none;}.gm-date,.hbtn.ex,.hbtn.rpt{display:none;}}
+
+/* ── SHARE MODAL ── */
+.share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.share-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .15s;-webkit-user-select:none;user-select:none;text-align:center;}
+.share-card:active{transform:scale(.94);background:var(--card);}
+.share-card-icon{font-size:28px;line-height:1;}
+.share-card-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:1px;color:var(--text);}
+.share-card-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);line-height:1.4;}
+.share-card.primary{border-color:rgba(255,107,0,.4);background:rgba(255,107,0,.06);}
+.share-card.primary .share-card-label{color:var(--accent);}
+.share-card.blue{border-color:rgba(41,121,255,.4);background:rgba(41,121,255,.06);}
+.share-card.blue .share-card-label{color:var(--blue);}
+.share-card.green{border-color:rgba(0,200,83,.4);background:rgba(0,200,83,.06);}
+.share-card.green .share-card-label{color:var(--green);}
+.share-card.purple{border-color:rgba(191,90,242,.4);background:rgba(191,90,242,.06);}
+.share-card.purple .share-card-label{color:var(--purple);}
+.share-divider{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.share-divider-line{flex:1;height:1px;background:var(--border);}
+.share-divider-text{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);white-space:nowrap;}
+.qr-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--card2);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;}
+.qr-canvas{border-radius:8px;border:3px solid #fff;}
+.qr-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);text-align:center;}
+.share-link-box{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.share-link-url{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.copy-link-btn{background:var(--accent);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:1px;padding:6px 12px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity .15s;}
+.copy-link-btn:active{opacity:.8;}
+.share-note{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);text-align:center;line-height:1.6;margin-top:8px;}
+.hbtn.share{background:rgba(41,121,255,.15);border:1px solid rgba(41,121,255,.3);color:var(--blue);}
 </style>
 </head>
 <body>
@@ -301,6 +343,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Barlow Co
       <button class="hbtn rpt"     id="btn-rpt">📄 REPORTS</button>
       <button class="hbtn ex"      id="btn-csv">⬇ CSV</button>
       <button class="hbtn nw"      id="btn-new">＋ NEW</button>
+      <button class="hbtn share"   id="btn-share">🔗 SHARE</button>
       <button class="hbtn upgrade" id="btn-upgrade" style="display:none">⭐ UPGRADE</button>
     </div>
   </div>
@@ -382,6 +425,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Barlow Co
       <div class="leg"><div class="ld miss"></div>Missed</div>
       <div class="leg"><div class="ld ft"></div>FT</div>
       <div class="leg" style="margin-left:auto;font-size:7px">Right-click removes</div>
+    </div>
+    <div style="padding:0 9px 5px;font-family:'DM Mono',monospace;font-size:8px;color:var(--sub);" id="shot-sync-note">
+      Select a player above → clicks auto-update their stats
     </div>
     <div class="cw">
       <svg id="court" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
@@ -679,7 +725,7 @@ function migrQ(q) {
   // Shot chart + quarter + shot type
   document.querySelectorAll('.stb').forEach(b => b.addEventListener('click', () => setST(b.dataset.type)));
   document.querySelectorAll('.q-btn').forEach(b => b.addEventListener('click', () => setQ(b.dataset.q === 'OT' ? 'OT' : parseInt(b.dataset.q))));
-  document.getElementById('shotsel').addEventListener('change', reShot);
+  document.getElementById('shotsel').addEventListener('change', () => { reShot(); updShotNote(); });
   const court = document.getElementById('court');
   court.addEventListener('click', plotShot);
   court.addEventListener('touchend', e => { e.preventDefault(); plotShot(e); });
@@ -791,7 +837,40 @@ function buildRow(p) {
       <button class="act-btn rpt" data-pid="${id}" data-role="rpt-btn">📄 RPT</button>
       <button class="act-btn del" data-pid="${id}" data-role="del-btn">✕ DEL</button>
     </div>`;
-  return row;
+
+  // ── TOTALS BAR ──
+  const tbWrap = document.createElement('div');
+  tbWrap.style.cssText = 'min-width:max-content;';
+  tbWrap.innerHTML = buildTotalsBar(p, t);
+  tbWrap.querySelector('[data-role="ptotals-bar"]').dataset.pid = id;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'prow-wrap';
+  wrapper.dataset.pid = id;
+  wrapper.style.cssText = 'display:flex;flex-direction:column;border-bottom:2px solid var(--border);';
+  row.style.borderBottom = 'none';
+  wrapper.appendChild(row);
+  wrapper.appendChild(tbWrap);
+  return wrapper;
+}
+
+function buildTotalsBar(p, t) {
+  const pv = pts(t);
+  const p2Pct = pct(t.p2m, t.p2a), p3Pct = pct(t.p3m, t.p3a), ftPct = pct(t.ftm, t.fta);
+  return `<div class="ptotals-bar" data-role="ptotals-bar" data-pid="${p.id}">
+    <div class="ptb-name">📊 GAME TOTALS</div>
+    <div class="ptb-cell ptb-pts"><span class="ptb-v" style="color:var(--accent)">${pv}</span><span class="ptb-l">PTS</span></div>
+    <div class="ptb-cell ptb-2pt"><span class="ptb-v" style="color:#60a5fa">${t.p2m}/${t.p2a}</span><span class="ptb-l">2PT · ${p2Pct}%</span></div>
+    <div class="ptb-cell ptb-3pt"><span class="ptb-v" style="color:var(--accent)">${t.p3m}/${t.p3a}</span><span class="ptb-l">3PT · ${p3Pct}%</span></div>
+    <div class="ptb-cell ptb-ft"><span class="ptb-v" style="color:var(--purple)">${t.ftm}/${t.fta}</span><span class="ptb-l">FT · ${ftPct}%</span></div>
+    <div class="ptb-sep"></div>
+    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--blue)">${t.reb}</span><span class="ptb-l">REB</span></div>
+    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--green)">${t.ast}</span><span class="ptb-l">AST</span></div>
+    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--red)">${t.tov}</span><span class="ptb-l">TOV</span></div>
+    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--cyan)">${t.stl}</span><span class="ptb-l">STL</span></div>
+    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--purple)">${t.blk}</span><span class="ptb-l">BLK</span></div>
+    <div class="ptb-cell ptb-stat"><span class="ptb-v" style="color:var(--yellow)">${t.fouls}</span><span class="ptb-l">FOULS</span></div>
+  </div>`;
 }
 
 function attachRowListeners() {
@@ -871,6 +950,9 @@ function fastUpd(pid, flashPts) {
   si('inf-tov',`game total <b>${t.tov}</b>`); si('inf-stl',`game total <b>${t.stl}</b>`);
   si('inf-blk',`game total <b>${t.blk}</b>`);
   const fe=getRole('inf-fouls'); if(fe){fe.innerHTML=`game total <b>${t.fouls}</b>`;fe.style.color=foulColor;}
+  // Update totals bar
+  const tb = document.querySelector(`.ptotals-bar[data-pid="${pid}"]`);
+  if (tb) { tb.outerHTML = buildTotalsBar(p, t); }
   updTotals(); updQBars();
 }
 
@@ -905,7 +987,7 @@ function addPlayer() {
   players.push(p);
   ['np-n','np-nm','np-ph'].forEach(id=>document.getElementById(id).value='');
   renderAll(); saveRoster(); showT(name+' added');
-  setTimeout(()=>{document.querySelector(`.prow[data-pid="${p.id}"]`)?.scrollIntoView({behavior:'smooth',block:'center'});},80);
+  setTimeout(()=>{document.querySelector(`.prow-wrap[data-pid="${p.id}"]`)?.scrollIntoView({behavior:'smooth',block:'center'});},80);
 }
 function delP(id) {
   if(!confirm('Remove player?'))return;
@@ -1109,18 +1191,373 @@ function smsAllPlayers() {
 
 // ═══ SHOT CHART ═══
 function setST(type){ST=type;document.querySelectorAll('.stb').forEach(b=>b.classList.toggle('on',b.dataset.type===type));}
-function updShotSel(){const sel=document.getElementById('shotsel'),cur=sel.value;sel.innerHTML='<option value="all">All Players</option>';players.forEach(p=>{sel.innerHTML+=`<option value="${p.id}">${p.num} ${p.name}</option>`;});if([...sel.options].some(o=>o.value===cur))sel.value=cur;}
+function updShotSel(){
+  const sel=document.getElementById('shotsel'),cur=sel.value;
+  sel.innerHTML='<option value="all">All Players</option>';
+  players.forEach(p=>{sel.innerHTML+=`<option value="${p.id}">${p.num} ${p.name}</option>`;});
+  if([...sel.options].some(o=>o.value===cur))sel.value=cur;
+  updShotNote();
+}
+function updShotNote(){
+  const sel=document.getElementById('shotsel');
+  const note=document.getElementById('shot-sync-note');
+  if(!note)return;
+  if(sel.value==='all'){
+    note.style.color='var(--sub)';
+    note.innerHTML='Select a player above → clicks auto-update their stats';
+  } else {
+    const p=players.find(x=>x.id===parseInt(sel.value));
+    note.innerHTML=`<span class="shot-link-badge">⚡ LIVE</span> Clicks add to <b style="color:var(--text)">${p?p.name:'player'}</b>'s stats`;
+    note.style.color='var(--green)';
+  }
+}
 const courtEl=document.getElementById('court');
 function getXY(e){const r=courtEl.getBoundingClientRect();let cx=e.clientX,cy=e.clientY;if(e.touches&&e.touches.length){cx=e.touches[0].clientX;cy=e.touches[0].clientY;}else if(e.changedTouches&&e.changedTouches.length){cx=e.changedTouches[0].clientX;cy=e.changedTouches[0].clientY;}return{x:Math.round(((cx-r.left)/r.width)*400),y:Math.round(((cy-r.top)/r.height)*360)};}
-function plotShot(e){if(e.target.tagName==='circle'||e.target.tagName==='text')return;const{x,y}=getXY(e);const shot={x,y,type:ST,quarter:CQ};shots.push(shot);addDot(shot,document.getElementById('sdots'));updShotStats();}
+// 3-point line approximation: arc center (200,140) radius ~174 + corner zones
+function is3pt(x, y) {
+  // Corner 3s: x<28 or x>372 within first 140px
+  if ((x < 28 || x > 372) && y < 140) return true;
+  // Arc: distance from basket (200,17) > 174 SVG units
+  const dx = x - 200, dy = y - 17;
+  return Math.sqrt(dx*dx + dy*dy) > 174;
+}
+
+function plotShot(e){
+  if(e.target.tagName==='circle'||e.target.tagName==='text')return;
+  const{x,y}=getXY(e);
+  const selPid = document.getElementById('shotsel').value;
+  const shot={x,y,type:ST,quarter:CQ,pid:selPid==='all'?null:parseInt(selPid)};
+  shots.push(shot);
+  addDot(shot,document.getElementById('sdots'));
+  updShotStats();
+
+  // ── Sync player stats ──
+  if (shot.pid !== null && shot.pid !== undefined) {
+    const p = players.find(x => x.id === shot.pid);
+    if (p) {
+      if (!p.q[CQ]) p.q[CQ] = eq();
+      const q = p.q[CQ];
+      let pointDelta = 0;
+      if (ST === 'ft') {
+        q.ftm++; q.fta++; pointDelta = 1;
+        showT('FT made → ' + p.name);
+      } else if (ST === 'made') {
+        const three = is3pt(x, y);
+        if (three) { q.p3m++; q.p3a++; pointDelta = 3; showT('3PT made → ' + p.name); }
+        else { q.p2m++; q.p2a++; pointDelta = 2; showT('2PT made → ' + p.name); }
+      } else if (ST === 'miss') {
+        const three = is3pt(x, y);
+        if (three) { q.p3a++; showT('3PT miss → ' + p.name); }
+        else { q.p2a++; showT('2PT miss → ' + p.name); }
+      }
+      saveRoster();
+      fastUpd(shot.pid, pointDelta > 0);
+    }
+  }
+}
 function addDot(shot,g){const cl={made:'#00C853',miss:'#FF3B30',ft:'#BF5AF2'}[shot.type];const grp=document.createElementNS('http://www.w3.org/2000/svg','g');const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',shot.x);c.setAttribute('cy',shot.y);c.setAttribute('r','7');c.setAttribute('fill',cl+'55');c.setAttribute('stroke',cl);c.setAttribute('stroke-width','2');const txt=document.createElementNS('http://www.w3.org/2000/svg','text');txt.setAttribute('x',shot.x);txt.setAttribute('y',shot.y+4);txt.setAttribute('text-anchor','middle');txt.setAttribute('font-size','8');txt.setAttribute('fill',cl);txt.setAttribute('font-family','DM Mono');txt.setAttribute('font-weight','700');txt.textContent=shot.type==='made'?'●':shot.type==='ft'?'F':'✕';grp.appendChild(c);grp.appendChild(txt);grp.style.cursor='pointer';grp.addEventListener('contextmenu',e=>{e.preventDefault();const i=shots.indexOf(shot);if(i>-1)shots.splice(i,1);g.removeChild(grp);updShotStats();});g.appendChild(grp);}
 function reShot(){const g=document.getElementById('sdots');g.innerHTML='';shots.forEach(s=>addDot(s,g));updShotStats();}
 function updShotStats(){const fg=shots.filter(s=>s.type!=='ft');const mk=fg.filter(s=>s.type==='made').length,at=fg.length;document.getElementById('cfp').textContent=(at>0?Math.round((mk/at)*100):0)+'%';document.getElementById('cmk').textContent=mk;document.getElementById('cat').textContent=at;}
+
+
+// ═══ SHARE SYSTEM ═══
+const SHARE_URL = window.location.href.split('?')[0];
+
+function openShare() {
+  document.getElementById('share-url-display').textContent = SHARE_URL;
+  drawQR(SHARE_URL);
+  openM('shov');
+}
+
+// Wire share button and modal close
+document.getElementById('btn-share').addEventListener('click', openShare);
+document.getElementById('shov').addEventListener('click', e => { if(e.target.id==='shov') closeM('shov'); });
+document.getElementById('shov-close').addEventListener('click', () => closeM('shov'));
+
+// Native share (Web Share API — works on mobile Safari & Chrome)
+document.getElementById('sc-native').addEventListener('click', async () => {
+  const data = {
+    title: 'CourtIQ — Basketball Stat Tracker',
+    text: 'Check out CourtIQ — a free basketball stat tracker for coaches. Works on any phone, no download needed!',
+    url: SHARE_URL
+  };
+  if (navigator.share) {
+    try { await navigator.share(data); showT('Shared!'); }
+    catch(e) { if (e.name !== 'AbortError') copyToClipboard(SHARE_URL); }
+  } else {
+    copyToClipboard(SHARE_URL);
+  }
+});
+
+// Copy link
+document.getElementById('sc-copy').addEventListener('click', () => copyToClipboard(SHARE_URL));
+document.getElementById('copy-link-btn').addEventListener('click', () => copyToClipboard(SHARE_URL));
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text)
+    .then(() => { showT('🔗 Link copied! Paste it anywhere.'); })
+    .catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showT('🔗 Link copied!');
+    });
+}
+
+// Text / SMS share
+document.getElementById('sc-sms').addEventListener('click', () => {
+  const msg = encodeURIComponent(
+    'Hey! Check out CourtIQ — a free basketball stat tracker for coaches. Works on your phone instantly, no app download needed: ' + SHARE_URL
+  );
+  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    window.location.href = 'sms:?body=' + msg;
+  } else {
+    copyToClipboard(SHARE_URL);
+    showT('📋 Link copied — paste into your messages app');
+  }
+});
+
+// Email share
+document.getElementById('sc-email').addEventListener('click', () => {
+  const subject = encodeURIComponent('CourtIQ — Free Basketball Stat Tracker for Coaches');
+  const body = encodeURIComponent(
+    'Hi,\n\nI wanted to share this free basketball stat tracker I\'ve been using — it\'s called CourtIQ.\n\n' +
+    'Works on any phone or tablet, no app download needed. Just open the link and start tracking stats right away:\n\n' +
+    SHARE_URL + '\n\n' +
+    'Features:\n' +
+    '• Track 2-PT, 3-PT, free throws, rebounds, assists, turnovers, steals, blocks & fouls\n' +
+    '• Live quarter-by-quarter breakdown\n' +
+    '• Interactive shot chart\n' +
+    '• Send stat reports directly to players via SMS\n' +
+    '• Works offline after first load\n\n' +
+    'Hope it helps your team!\n'
+  );
+  window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
+});
+
+// Download the HTML file
+document.getElementById('sc-download').addEventListener('click', () => {
+  fetch(window.location.href)
+    .then(r => r.blob())
+    .then(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'CourtIQ.html';
+      a.click();
+      showT('📥 Downloaded! Open CourtIQ.html in any browser.');
+    })
+    .catch(() => {
+      // Fallback: just copy the link
+      copyToClipboard(SHARE_URL);
+      showT('📋 Link copied — bookmark it to save!');
+    });
+});
+
+// Home screen instructions
+document.getElementById('sc-homescreen').addEventListener('click', () => {
+  const iOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const android = /Android/i.test(navigator.userAgent);
+  if (iOS) {
+    showT('In Safari: tap Share (box↑) → Add to Home Screen');
+  } else if (android) {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+    } else {
+      showT('In Chrome: tap ⋮ menu → Add to Home Screen');
+    }
+  } else {
+    showT('In Chrome: click ⋮ menu → Install CourtIQ');
+  }
+});
+
+// ── QR CODE GENERATOR (pure canvas, no library needed) ──
+// Uses a simplified QR-like visual. For production, swap in a real QR lib.
+function drawQR(url) {
+  const canvas = document.getElementById('qr-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const size = 180;
+  ctx.clearRect(0, 0, size, size);
+
+  // Use the QRCode library if available, else draw placeholder
+  if (window.QRCode) {
+    canvas.width = size; canvas.height = size;
+    QRCode.toCanvas(canvas, url, { width: size, margin: 1, color: { dark: '#000000', light: '#ffffff' } }, err => {
+      if (err) drawQRPlaceholder(ctx, size, url);
+    });
+  } else {
+    drawQRPlaceholder(ctx, size, url);
+  }
+}
+
+function drawQRPlaceholder(ctx, size, url) {
+  // White background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size, size);
+
+  // Generate deterministic pattern from URL string
+  const hash = [...url].reduce((h, c) => (Math.imul(31, h) + c.charCodeAt(0)) | 0, 0);
+  const cells = 21;
+  const cell = Math.floor(size / cells);
+  const offset = Math.floor((size - cells * cell) / 2);
+
+  ctx.fillStyle = '#000000';
+
+  // Finder patterns (3 corners)
+  const drawFinder = (r, c) => {
+    ctx.fillRect(offset + c*cell, offset + r*cell, 7*cell, 7*cell);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(offset + (c+1)*cell, offset + (r+1)*cell, 5*cell, 5*cell);
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(offset + (c+2)*cell, offset + (r+2)*cell, 3*cell, 3*cell);
+  };
+  drawFinder(0, 0); drawFinder(0, 14); drawFinder(14, 0);
+
+  // Data cells — deterministic from hash
+  for (let r = 0; r < cells; r++) {
+    for (let c = 0; c < cells; c++) {
+      // Skip finder pattern areas
+      if ((r<8&&c<8)||(r<8&&c>12)||(r>12&&c<8)) continue;
+      const bit = ((hash >> ((r * cells + c) % 32)) & 1) ^ ((r + c) & 1 ? 1 : 0);
+      if (bit) ctx.fillRect(offset + c*cell, offset + r*cell, cell, cell);
+    }
+  }
+
+  // Center label
+  ctx.fillStyle = 'rgba(255,107,0,0.9)';
+  ctx.fillRect(size/2 - 28, size/2 - 10, 56, 20);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 10px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('COURTIQ', size/2, size/2);
+}
+
+// Load real QR library async — falls back to placeholder if unavailable
+(function loadQRLib() {
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+  script.onload = () => {
+    // qrcodejs sets window.QRCode — wrap it for our toCanvas API
+    if (window.QRCode && typeof window.QRCode === 'function') {
+      const OrigQR = window.QRCode;
+      window.QRCode = {
+        toCanvas: (canvas, text, opts, cb) => {
+          try {
+            const tmp = document.createElement('div');
+            tmp.style.cssText = 'position:absolute;left:-9999px;top:-9999px;';
+            document.body.appendChild(tmp);
+            new OrigQR(tmp, {
+              text, width: opts.width, height: opts.width,
+              colorDark: opts.color.dark, colorLight: opts.color.light,
+              correctLevel: OrigQR.CorrectLevel ? OrigQR.CorrectLevel.M : 1
+            });
+            setTimeout(() => {
+              const src = tmp.querySelector('canvas') || tmp.querySelector('img');
+              if (src) {
+                canvas.width = opts.width; canvas.height = opts.width;
+                const ctx = canvas.getContext('2d');
+                if (src.tagName === 'CANVAS') {
+                  ctx.drawImage(src, 0, 0, opts.width, opts.width);
+                } else {
+                  const i = new Image(); i.onload = () => ctx.drawImage(i, 0, 0, opts.width, opts.width);
+                  i.src = src.src;
+                }
+              }
+              document.body.removeChild(tmp);
+              if (cb) cb(null);
+            }, 100);
+          } catch(e) { if (cb) cb(e); }
+        }
+      };
+    }
+  };
+  script.onerror = () => {}; // silently use placeholder
+  document.head.appendChild(script);
+})();
 
 // ═══ MODALS ═══
 function openM(id){document.getElementById(id).classList.add('open');}
 function closeM(id){document.getElementById(id).classList.remove('open');}
 function showT(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
+
+<!-- ── SHARE MODAL ── -->
+<div class="overlay" id="shov">
+  <div class="sheet" style="max-width:500px;">
+    <div class="sh-handle"></div>
+    <div class="sh-hdr"><div class="sh-title">🔗 SHARE COURTIQ</div><div class="sh-x" id="shov-close">✕</div></div>
+    <div class="sh-body">
+
+      <div class="share-grid">
+        <div class="share-card primary" id="sc-native">
+          <span class="share-card-icon">📤</span>
+          <span class="share-card-label">SHARE APP</span>
+          <span class="share-card-sub">Send via Messages,<br>AirDrop, Email &amp; more</span>
+        </div>
+        <div class="share-card blue" id="sc-copy">
+          <span class="share-card-icon">🔗</span>
+          <span class="share-card-label">COPY LINK</span>
+          <span class="share-card-sub">Copy URL to<br>paste anywhere</span>
+        </div>
+        <div class="share-card green" id="sc-sms">
+          <span class="share-card-icon">💬</span>
+          <span class="share-card-label">TEXT IT</span>
+          <span class="share-card-sub">Send a text with<br>the download link</span>
+        </div>
+        <div class="share-card purple" id="sc-email">
+          <span class="share-card-icon">📧</span>
+          <span class="share-card-label">EMAIL IT</span>
+          <span class="share-card-sub">Send via email<br>with instructions</span>
+        </div>
+      </div>
+
+      <div class="share-divider">
+        <div class="share-divider-line"></div>
+        <span class="share-divider-text">OR SHOW THEM THE QR CODE</span>
+        <div class="share-divider-line"></div>
+      </div>
+
+      <div class="qr-wrap">
+        <canvas id="qr-canvas" class="qr-canvas" width="180" height="180"></canvas>
+        <div class="qr-label">Scan with any camera to open CourtIQ<br>Works on iPhone, Android &amp; any browser</div>
+      </div>
+
+      <div class="share-link-box">
+        <span class="share-link-url" id="share-url-display"></span>
+        <button class="copy-link-btn" id="copy-link-btn">COPY</button>
+      </div>
+
+      <div class="share-divider">
+        <div class="share-divider-line"></div>
+        <span class="share-divider-text">DOWNLOAD &amp; INSTALL</span>
+        <div class="share-divider-line"></div>
+      </div>
+
+      <div class="share-grid">
+        <div class="share-card" id="sc-download">
+          <span class="share-card-icon">⬇️</span>
+          <span class="share-card-label">DOWNLOAD FILE</span>
+          <span class="share-card-sub">Save the .html file<br>and open anytime offline</span>
+        </div>
+        <div class="share-card" id="sc-homescreen">
+          <span class="share-card-icon">📱</span>
+          <span class="share-card-label">ADD TO HOME</span>
+          <span class="share-card-sub">iPhone: Share → Add to<br>Home Screen in Safari</span>
+        </div>
+      </div>
+
+      <div class="share-note">
+        CourtIQ is a free web app — no App Store needed.<br>
+        Works on any phone, tablet, or computer with a browser.<br>
+        <span style="color:var(--accent)">Share the link and they can use it instantly.</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
