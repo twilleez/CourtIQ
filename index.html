@@ -75,7 +75,9 @@ button,input,select{font:inherit;cursor:pointer}
 /* CONTROLS ROW */
 .controls{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:0 16px 10px;flex-wrap:wrap}
 .segmented,.quarter-strip{display:flex;gap:6px;flex-wrap:wrap}
-.seg,.qbtn,.pill{border:none;border-radius:999px;padding:8px 14px;background:rgba(255,255,255,.07);color:var(--muted);font-weight:800;letter-spacing:.3px;font-size:12px;transition:all .15s}
+.seg,.pill{border:none;border-radius:999px;padding:8px 14px;background:rgba(255,255,255,.07);color:var(--muted);font-weight:800;letter-spacing:.3px;font-size:12px;transition:all .15s}
+.qbtn{border:none;border-radius:14px;padding:10px 18px;min-height:48px;min-width:52px;background:rgba(255,255,255,.07);color:var(--muted);font-weight:900;font-size:15px;letter-spacing:.5px;transition:all .15s}
+.qbtn:active{transform:scale(.92)}
 .seg.active,.qbtn.active{background:white;color:#0b1220}
 .qbtn[data-q="1"].active{background:#60a5fa;color:#fff}
 .qbtn[data-q="2"].active{background:#a78bfa;color:#fff}
@@ -105,6 +107,13 @@ button,input,select{font:inherit;cursor:pointer}
 
 /* PLAYER CARDS */
 .players,.insights,.history{display:grid;gap:10px}
+
+/* FOUL ALERTS */
+.player-card.foul-warn{border-color:rgba(251,191,36,.4);background:linear-gradient(180deg,rgba(251,191,36,.05),rgba(255,255,255,.02))}
+.player-card.foul-danger{border-color:rgba(239,68,68,.5);background:linear-gradient(180deg,rgba(239,68,68,.07),rgba(255,255,255,.02))}
+.foul-alert{display:inline-flex;align-items:center;gap:5px;background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.4);border-radius:8px;padding:5px 11px;font-size:12px;font-weight:700;color:#fecaca;margin-top:6px;animation:pulse-alert 1.2s ease-in-out infinite}
+.foul-warn-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.35);border-radius:8px;padding:5px 11px;font-size:12px;font-weight:700;color:var(--gold);margin-top:6px}
+@keyframes pulse-alert{0%,100%{opacity:1}50%{opacity:.5}}
 .player-card{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:14px}
 .player-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
 .player-id{display:flex;align-items:center;gap:10px}
@@ -116,6 +125,19 @@ button,input,select{font:inherit;cursor:pointer}
 .points .value{font-family:"Barlow Condensed",sans-serif;font-size:42px;line-height:.85;color:var(--accent)}
 
 /* GAME TOTALS BAR */
+
+/* REC MODE */
+.rec-mode-bar{display:flex;align-items:center;justify-content:space-between;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:10px 14px;margin-bottom:12px}
+.rec-mode-title{font-size:13px;font-weight:700;color:var(--green)}
+.rec-mode-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.toggle-wrap{display:flex;align-items:center;gap:8px}
+.toggle-lbl{font-size:11px;color:var(--muted)}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:rgba(255,255,255,.12);border-radius:999px;cursor:pointer;transition:background .2s}
+.toggle input:checked+.toggle-track{background:var(--green)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s;pointer-events:none}
+.toggle input:checked~.toggle-thumb{transform:translateX(20px)}
 .game-totals-bar{
   display:flex;align-items:center;flex-wrap:nowrap;overflow-x:auto;
   background:rgba(255,122,26,.07);border:1px solid rgba(255,122,26,.2);
@@ -129,21 +151,51 @@ button,input,select{font:inherit;cursor:pointer}
 .gtb-l{font-family:"DM Mono",monospace;font-size:7px;color:var(--muted);margin-top:2px;white-space:nowrap}
 
 /* STAT GRID */
+
+/* ROTATION TRACKER */
+.rotation-section{margin-top:12px;background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.2);border-radius:14px;padding:12px}
+.rotation-title{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--blue);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.rotation-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.rot-slot{border:2px dashed rgba(255,255,255,.15);border-radius:10px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all .15s;padding:4px}
+.rot-slot.filled{border-style:solid;border-color:var(--blue);background:rgba(96,165,250,.1)}
+.rot-slot.filled:hover{background:rgba(239,68,68,.15);border-color:var(--red)}
+.rot-slot-num{font-family:"Barlow Condensed",sans-serif;font-size:16px;font-weight:900;color:var(--blue)}
+.rot-slot-name{font-size:9px;color:var(--muted);text-align:center;line-height:1.2;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rot-bench-title{font-size:10px;color:var(--muted);margin:8px 0 5px;letter-spacing:1px;text-transform:uppercase}
+.rot-bench-row{display:flex;flex-wrap:wrap;gap:5px}
+.rot-bench-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;color:var(--text);cursor:pointer;transition:all .12s}
+.rot-bench-btn:hover{background:rgba(96,165,250,.15);border-color:var(--blue);color:var(--blue)}
 .live-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
 .stat-tile{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:9px}
 .stat-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .stat-name{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px}
 .stat-val{font-family:"Barlow Condensed",sans-serif;font-size:24px}
-.stepper{display:grid;grid-template-columns:38px 1fr 38px;gap:6px;align-items:center}
-.stepper button{border:none;border-radius:10px;height:38px;font-size:20px;font-weight:700}
-.stepper .minus{background:rgba(239,68,68,.18);color:#fecaca}
-.stepper .plus{background:rgba(34,197,94,.18);color:#bbf7d0}
-.stepper .display{text-align:center;font-weight:900;font-size:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:7px 0}
+.stepper{display:grid;grid-template-columns:52px 1fr 52px;gap:6px;align-items:center}
+.stepper button{border:none;border-radius:12px;height:52px;font-size:24px;font-weight:700;transition:transform .08s}
+.stepper button:active{transform:scale(.88)}
+.stepper .minus{background:rgba(239,68,68,.22);color:#fecaca}
+.stepper .minus:active{background:rgba(239,68,68,.55)}
+.stepper .plus{background:rgba(34,197,94,.22);color:#bbf7d0}
+.stepper .plus:active{background:rgba(34,197,94,.55)}
+.stepper .display{text-align:center;font-weight:900;font-size:22px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 0;font-family:"Barlow Condensed",sans-serif}
 .advanced-grid{margin-top:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .mini{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:9px}
 .mini h4{margin:0 0 7px;color:var(--muted);font-size:10px;letter-spacing:1px;text-transform:uppercase}
 
 /* ADD PLAYER */
+
+/* OPPONENT STATS */
+.opp-row{display:flex;align-items:center;gap:8px;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:9px 12px;margin-top:6px}
+.opp-label{font-size:11px;font-weight:700;color:var(--purple);min-width:60px}
+.opp-stepper{display:flex;align-items:center;gap:6px}
+.opp-btn{background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);border-radius:9px;width:44px;height:44px;font-size:22px;font-weight:700;color:var(--purple);display:flex;align-items:center;justify-content:center}
+.opp-btn:active{transform:scale(.88)}
+.opp-val{font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:900;color:var(--purple);min-width:36px;text-align:center}
+.pro-teaser{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:10px 14px;margin-top:10px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.pro-teaser:hover{background:rgba(251,191,36,.12)}
+.pro-teaser-text{flex:1;font-size:12px;color:var(--muted)}
+.pro-teaser-text strong{color:var(--gold);display:block;font-size:13px;margin-bottom:2px}
+.pro-teaser-btn{background:linear-gradient(135deg,var(--gold),#f97316);color:#1a0800;font-size:11px;font-weight:900;padding:6px 12px;border:none;border-radius:9px;cursor:pointer;white-space:nowrap}
 .add-player{display:grid;grid-template-columns:80px 1.2fr 1fr auto;gap:8px;margin-top:10px}
 .add-player input,.select{background:rgba(255,255,255,.05);color:var(--text);border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:11px 12px;outline:none}
 .add-player input:focus,.select:focus{border-color:var(--accent)}
@@ -178,6 +230,23 @@ button,input,select{font:inherit;cursor:pointer}
 .history-meta{color:var(--muted);font-size:11px;margin-top:3px}
 
 /* FOOTER */
+
+/* SMS BLAST DIALOG */
+.sms-player-list{display:grid;gap:7px;max-height:220px;overflow-y:auto;margin:10px 0}
+.sms-player-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:9px 12px}
+.sms-check{width:20px;height:20px;accent-color:var(--accent);cursor:pointer}
+.sms-player-name{flex:1;font-size:13px}
+.sms-player-pts{font-family:"Barlow Condensed",sans-serif;font-size:16px;font-weight:900;color:var(--accent)}
+.sms-preview{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px 12px;font-size:11px;color:var(--muted);line-height:1.6;margin:10px 0;white-space:pre-wrap;max-height:130px;overflow-y:auto;font-family:"DM Mono",monospace}
+/* INSTALL BANNER */
+.install-banner{display:none;align-items:center;gap:10px;background:rgba(255,122,26,.1);border-bottom:1px solid rgba(255,122,26,.25);padding:9px 16px}
+.install-banner.show{display:flex}
+.install-banner-text{flex:1;font-size:12px;color:var(--text)}
+.install-banner-text strong{color:var(--accent)}
+.install-banner-btn{background:var(--accent);color:#1a0800;font-weight:900;font-size:12px;padding:7px 14px;border:none;border-radius:10px;cursor:pointer;white-space:nowrap}
+.install-dismiss{background:transparent;border:none;color:var(--muted);font-size:18px;padding:4px 8px;cursor:pointer}
+/* FEAT-NEW BADGE */
+.feat-new{display:inline-block;background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3);font-size:9px;font-weight:900;padding:1px 6px;border-radius:999px;margin-left:5px;vertical-align:middle}
 .footerbar{display:none}
 
 /* TOAST */
@@ -249,6 +318,13 @@ dialog::backdrop{background:rgba(0,0,0,.75);backdrop-filter:blur(6px)}
 </head>
 <body>
 <div class="app">
+
+  <!-- PWA INSTALL BANNER -->
+  <div class="install-banner" id="installBanner">
+    <div class="install-banner-text"><strong>Add CourtIQ to your home screen</strong> — one-tap sideline access, works offline</div>
+    <button class="install-banner-btn" id="installBtn">Add to Home Screen</button>
+    <button class="install-dismiss" id="installDismiss">✕</button>
+  </div>
 
   <!-- ═══ HEADER ═══ -->
   <header class="topbar">
@@ -327,10 +403,56 @@ dialog::backdrop{background:rgba(0,0,0,.75);backdrop-filter:blur(6px)}
           <h2>Roster &amp; Live Stats</h2>
           <p>Tap +/− to track every possession in real time</p>
         </div>
-        <button class="btn btn-ghost" id="toggleModeBtn" style="font-size:11px">Toggle Detail</button>
+        <button class="btn btn-ghost" id="smsBlastBtn" style="font-size:11px">📲 SMS Blast</button>
+        <button class="btn btn-ghost" id="toggleModeBtn" style="font-size:11px">Detail</button>
       </div>
       <div class="panel-body">
+        <!-- REC MODE TOGGLE -->
+        <div class="rec-mode-bar">
+          <div>
+            <div class="rec-mode-title">Rec Mode</div>
+            <div class="rec-mode-sub" id="recModeSub">Toggle on for rec / youth leagues — hides advanced stats</div>
+          </div>
+          <div class="toggle-wrap">
+            <span class="toggle-lbl" id="recModeLbl">Off</span>
+            <label class="toggle">
+              <input type="checkbox" id="recModeToggle">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+        </div>
+
         <div class="players" id="players"></div>
+
+        <!-- ROTATION TRACKER -->
+        <div class="rotation-section">
+          <div class="rotation-title">
+            <span>On Court — Q<span id="rotQ">1</span></span>
+            <button class="btn btn-ghost" id="clearRotBtn" style="font-size:10px;min-height:28px;padding:4px 10px">Clear</button>
+          </div>
+          <div class="rotation-grid" id="rotationGrid"></div>
+          <div class="rot-bench-title">Bench — tap to sub in</div>
+          <div class="rot-bench-row" id="rotBenchRow"></div>
+        </div>
+
+        <!-- PRO TEASER: opponent stats -->
+        <div class="pro-teaser" id="oppTeaser" onclick="openUpgrade()">
+          <div class="pro-teaser-text">
+            <strong>⭐ Opponent Stats — Pro Feature</strong>
+            Track the other team's points, rebounds &amp; fouls side by side
+          </div>
+          <button class="pro-teaser-btn">Unlock</button>
+        </div>
+
+        <!-- OPPONENT STATS (Pro) -->
+        <div id="oppStatsSection" style="display:none">
+          <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--purple);text-transform:uppercase;margin:12px 0 8px">Opponent Stats</div>
+          <div class="opp-row"><span class="opp-label">Points</span><div class="opp-stepper"><button class="opp-btn" id="oppPtsDn">−</button><div class="opp-val" id="oppPtsVal">0</div><button class="opp-btn" id="oppPtsUp">+</button></div></div>
+          <div class="opp-row"><span class="opp-label">Rebounds</span><div class="opp-stepper"><button class="opp-btn" id="oppRebDn">−</button><div class="opp-val" id="oppRebVal">0</div><button class="opp-btn" id="oppRebUp">+</button></div></div>
+          <div class="opp-row"><span class="opp-label">Fouls</span><div class="opp-stepper"><button class="opp-btn" id="oppFoulDn">−</button><div class="opp-val" id="oppFoulVal">0</div><button class="opp-btn" id="oppFoulUp">+</button></div></div>
+        </div>
+
         <div class="add-player" style="margin-top:14px">
           <input id="addNum" placeholder="#" style="text-align:center">
           <input id="addName" placeholder="Player name">
@@ -428,10 +550,11 @@ dialog::backdrop{background:rgba(0,0,0,.75);backdrop-filter:blur(6px)}
     <h3>Welcome to CourtIQ 🏀</h3>
     <p>The fastest basketball stat tracker for coaches. Works offline, no login needed.</p>
     <ul>
-      <li>Track every player's stats by quarter in real time</li>
-      <li>Click the shot chart — auto-detects 2PT vs 3PT</li>
-      <li>Undo support for fast sideline corrections</li>
-      <li>Save games and build a full season history</li>
+      <li>Bigger buttons — designed for sweaty sideline hands</li>
+      <li>Shot chart auto-detects 2PT vs 3PT from where you tap</li>
+      <li>Foul alerts fire automatically at 3 and 5 fouls</li>
+      <li>Rec Mode simplifies stats for youth &amp; rec leagues</li>
+      <li>Rotation tracker keeps your on-court lineup in sync</li>
     </ul>
     <div class="modal-actions">
       <button class="btn btn-primary" id="startBtn">Start Tracking</button>
@@ -483,7 +606,10 @@ dialog::backdrop{background:rgba(0,0,0,.75);backdrop-filter:blur(6px)}
       <p>Unlock the full coaching toolkit. Cancel anytime.</p>
     </div>
     <ul class="upgrade-feats">
-      <li><span class="feat-icon">📊</span><div><strong>Full Season History</strong><div class="feat-sub">Save, load &amp; compare every game</div></div></li>
+      <li><span class="feat-icon">🔄</span><div><strong>Rotation Tracker <span class="feat-new">NEW</span></strong><div class="feat-sub">Visual lineup grid — track who's on the floor every minute</div></div></li>
+      <li><span class="feat-icon">📊</span><div><strong>Opponent Stats <span class="feat-new">NEW</span></strong><div class="feat-sub">Track the other team side by side</div></div></li>
+      <li><span class="feat-icon">📲</span><div><strong>Parent SMS Blast <span class="feat-new">NEW</span></strong><div class="feat-sub">Auto-send postgame recaps to all parents at once</div></div></li>
+      <li><span class="feat-icon">📋</span><div><strong>Full Season History</strong><div class="feat-sub">Save, load &amp; compare every game</div></div></li>
       <li><span class="feat-icon">📈</span><div><strong>Week-Over-Week Trends</strong><div class="feat-sub">Player growth charts across the season</div></div></li>
       <li><span class="feat-icon">📄</span><div><strong>PDF Season Reports</strong><div class="feat-sub">Professional reports to share with parents</div></div></li>
       <li><span class="feat-icon">📤</span><div><strong>CSV Exports &amp; SMS Stats</strong><div class="feat-sub">Take data anywhere you need it</div></div></li>
@@ -511,6 +637,22 @@ dialog::backdrop{background:rgba(0,0,0,.75);backdrop-filter:blur(6px)}
   </div>
 </dialog>
 
+
+<!-- SMS BLAST DIALOG -->
+<dialog id="dlgSmsBlast">
+  <div class="modal">
+    <h3>📲 Postgame SMS Blast</h3>
+    <p>Select players to notify with their stat summary.</p>
+    <div class="sms-player-list" id="smsPlayerList"></div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Message preview</div>
+    <div class="sms-preview" id="smsPreview"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="smsSendBtn">Send to Selected</button>
+      <button class="btn btn-secondary" id="closeSmsBlastBtn">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -521,9 +663,11 @@ const SK = "courtiq_v2_state";
 const WK = "courtiq_welcome_seen";
 
 const state = {
-  mode:"live", quarter:1, shotMode:"made",
+  mode:"live", quarter:1, shotMode:"made", recMode:false,
   nextId:1, players:[], shots:[], games:[],
-  historyStack:[], isPro:false
+  historyStack:[], isPro:false,
+  rotation:[null,null,null,null,null],
+  opp:{pts:0,reb:0,fouls:0}
 };
 
 function eq(){ return {p2m:0,p2a:0,p3m:0,p3a:0,ftm:0,fta:0,reb:0,ast:0,tov:0,stl:0,blk:0,fouls:0}; }
@@ -534,9 +678,9 @@ function mkPlayer(num,name,phone,id){
 
 function snapshot(){
   return JSON.parse(JSON.stringify({
-    mode:state.mode, quarter:state.quarter, shotMode:state.shotMode,
+    mode:state.mode, quarter:state.quarter, shotMode:state.shotMode, recMode:state.recMode,
     nextId:state.nextId, players:state.players, shots:state.shots,
-    games:state.games, isPro:state.isPro
+    games:state.games, isPro:state.isPro, rotation:state.rotation, opp:state.opp
   }));
 }
 function pushHistory(){ state.historyStack.push(snapshot()); if(state.historyStack.length>50)state.historyStack.shift(); }
@@ -552,9 +696,10 @@ function loadPersistedState(){
     const raw = JSON.parse(localStorage.getItem(SK)||"null");
     if(!raw)return;
     Object.assign(state, {
-      mode:raw.mode||"live", quarter:raw.quarter??1, shotMode:raw.shotMode||"made",
+      mode:raw.mode||"live", quarter:raw.quarter??1, shotMode:raw.shotMode||"made", recMode:raw.recMode||false,
       nextId:raw.nextId||1, players:raw.players||[], shots:raw.shots||[],
-      games:raw.games||[], isPro:raw.isPro||localStorage.getItem("ciq_pro_demo")==="1"
+      games:raw.games||[], isPro:raw.isPro||localStorage.getItem("ciq_pro_demo")==="1",
+      rotation:raw.rotation||[null,null,null,null,null], opp:raw.opp||{pts:0,reb:0,fouls:0}
     });
     if(raw.meta){
       byId("homeTeam").value=raw.meta.home||"HOME";
@@ -609,6 +754,7 @@ function today(){ return new Date().toISOString().slice(0,10); }
 function esc(s){ return String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;"); }
 function showToast(msg){ const e=byId("toast");e.textContent=msg;e.classList.add("show");clearTimeout(showToast._t);showToast._t=setTimeout(()=>e.classList.remove("show"),2000); }
 function setStatus(msg){ const e=byId("autosaveStatus");if(e)e.textContent=msg; }
+function vibrate(ms){if(navigator.vibrate)navigator.vibrate(ms)}
 
 // ═══════════════════════════════════════════════
 // RENDER
@@ -616,8 +762,10 @@ function setStatus(msg){ const e=byId("autosaveStatus");if(e)e.textContent=msg; 
 function rerender(){
   renderModes(); renderQuarters(); renderSummary();
   renderPlayers(); renderInsights();
+  renderRotation();
   renderShotSel(); renderShots(); renderShotStats(); renderShotNote();
   renderHistory();
+  renderOppStats();
   persist();
 }
 
@@ -640,13 +788,14 @@ function renderSummary(){
 function renderPlayers(){
   const wrap=byId("players");
   if(!state.players.length){wrap.innerHTML=`<div class="empty">No players yet. Add one below.</div>`;return;}
-  const adv=state.mode==="advanced";
+  const adv=state.mode==="advanced", rec=state.recMode;
   wrap.innerHTML=state.players.map(p=>{
     const tot=totalPlayer(p), q=p.q[aqk()]||eq();
     const p2p=pct(tot.p2m,tot.p2a), p3p=pct(tot.p3m,tot.p3a), ftp=pct(tot.ftm,tot.fta);
     const foulColor=tot.fouls>=5?"#ef4444":tot.fouls>=4?"#fbbf24":"var(--muted)";
     return `
-    <div class="player-card">
+    <div class="player-card${tot.fouls>=5?' foul-danger':tot.fouls>=3?' foul-warn':''}">
+      ${tot.fouls>=5?'<div class="foul-alert">🚨 '+tot.fouls+' FOULS — FOUL OUT RISK</div>':tot.fouls===3||tot.fouls===4?'<div class="foul-warn-badge">⚠️ '+tot.fouls+' fouls — manage minutes</div>':''}
       <div class="player-top">
         <div class="player-id">
           <div class="badge">#${esc(p.num)}</div>
@@ -700,7 +849,7 @@ function renderPlayers(){
     </div>`;
   }).join("");
 
-  qsa(".stepper button").forEach(b=>b.addEventListener("click",()=>adjustStat(+b.dataset.pid,b.dataset.stat,+b.dataset.delta)));
+  qsa(".stepper button").forEach(b=>b.addEventListener("click",()=>{vibrate(35);adjustStat(+b.dataset.pid,b.dataset.stat,+b.dataset.delta);}));
   qsa(".copy-btn").forEach(b=>b.addEventListener("click",()=>copyPlayer(+b.dataset.pid)));
   qsa(".del-btn").forEach(b=>b.addEventListener("click",()=>removePlayer(+b.dataset.pid)));
 }
@@ -782,6 +931,37 @@ function renderHistory(){
   qsa(".del-game").forEach(b=>b.addEventListener("click",()=>deleteGame(+b.dataset.idx)));
 }
 
+
+// ── ROTATION TRACKER ──
+function renderRotation(){
+  const grid=byId("rotationGrid"),bench=byId("rotBenchRow"),ql=byId("rotQ");
+  if(!grid||!bench)return;
+  if(ql)ql.textContent=String(state.quarter);
+  const onIds=state.rotation.filter(Boolean);
+  grid.innerHTML=state.rotation.map((pid,i)=>{
+    const p=pid?state.players.find(x=>x.id===pid):null;
+    if(p)return`<div class="rot-slot filled" data-slot="${i}"><div class="rot-slot-num">#${esc(p.num)}</div><div class="rot-slot-name">${esc(p.name)}</div></div>`;
+    return`<div class="rot-slot" data-slot="${i}"><div style="font-size:10px;color:var(--dim)">+ Sub</div></div>`;
+  }).join("");
+  const benchP=state.players.filter(p=>!onIds.includes(p.id));
+  bench.innerHTML=benchP.length?benchP.map(p=>`<button class="rot-bench-btn" data-pid="${p.id}">#${esc(p.num)} ${esc(p.name)}</button>`).join(""):`<span style="font-size:11px;color:var(--dim)">All on court</span>`;
+  grid.querySelectorAll(".rot-slot.filled").forEach(sl=>sl.addEventListener("click",()=>{
+    pushHistory();state.rotation[+sl.dataset.slot]=null;vibrate(30);persist();renderRotation();
+  }));
+  bench.querySelectorAll(".rot-bench-btn").forEach(btn=>btn.addEventListener("click",()=>{
+    const pid=+btn.dataset.pid,ei=state.rotation.findIndex(s=>s===null);
+    if(ei<0){showToast("Court full — tap a player to sub out");return}
+    pushHistory();state.rotation[ei]=pid;vibrate(40);persist();renderRotation();
+  }));
+}
+function renderOppStats(){
+  const pro=state.isPro;
+  const t=byId("oppTeaser"),s=byId("oppStatsSection");
+  if(t)t.style.display=pro?"none":"flex";
+  if(s)s.style.display=pro?"block":"none";
+  if(pro){byId("oppPtsVal").textContent=state.opp.pts;byId("oppRebVal").textContent=state.opp.reb;byId("oppFoulVal").textContent=state.opp.fouls;}
+}
+
 // ═══════════════════════════════════════════════
 // ACTIONS
 // ═══════════════════════════════════════════════
@@ -797,6 +977,7 @@ function adjustStat(id,stat,delta){
     if(stat==="p2m"&&delta<0&&q.p2a>q.p2m)q.p2a=Math.max(q.p2m,q.p2a-1);
     if(stat==="p3m"&&delta<0&&q.p3a>q.p3m)q.p3a=Math.max(q.p3m,q.p3a-1);
     if(stat==="ftm"&&delta<0&&q.fta>q.ftm)q.fta=Math.max(q.ftm,q.fta-1);
+    if(stat==="fouls"&&delta>0){const tf=totalPlayer(p).fouls;if(tf===5){showToast(`🚨 ${p.name} — 5 FOULS! Risk of foul out!`,3500);vibrate([100,50,100,50,200]);}else if(tf===3){showToast(`⚠️ ${p.name} — 3 fouls. Watch the minutes.`,2500);vibrate([60,40,60]);}}
   } else {
     q[stat]=Math.max(0,q[stat]+delta);
     if(stat==="p2a")q.p2m=Math.min(q.p2m,q.p2a);
@@ -819,6 +1000,7 @@ function removePlayer(id){
   pushHistory();
   state.players=state.players.filter(p=>p.id!==id);
   state.shots=state.shots.filter(s=>s.playerId!==id);
+  state.rotation=state.rotation.map(pid=>pid===id?null:pid);
   rerender(); showToast("Player removed.");
 }
 function copyPlayer(id){
@@ -830,7 +1012,7 @@ function copyPlayer(id){
 function newGame(){
   if(!confirm("New game? Unsaved stats will be cleared."))return;
   pushHistory();
-  state.players=[]; state.shots=[]; state.nextId=1; state.mode="live"; state.quarter=1;
+  state.players=[]; state.shots=[]; state.nextId=1; state.mode="live"; state.quarter=1; state.rotation=[null,null,null,null,null]; state.opp={pts:0,reb:0,fouls:0};
   byId("homeTeam").value="HOME"; byId("awayTeam").value="AWAY"; byId("gameDate").value=today();
   seedDefaults(); rerender(); showToast("New game ready.");
 }
@@ -921,6 +1103,32 @@ function onCourtClick(evt){
   rerender();
 }
 
+
+// ── SMS BLAST ──
+function openSmsBlast(){
+  if(!state.isPro){openUpgrade();showToast("SMS Blast is a Pro feature");return;}
+  const playersWithPhone=state.players.filter(p=>p.phone);
+  if(!playersWithPhone.length){showToast("No player phone numbers saved.");return;}
+  byId("smsPlayerList").innerHTML=playersWithPhone.map(p=>{const t=totalPlayer(p);return`<div class="sms-player-row"><input type="checkbox" class="sms-check" data-pid="${p.id}" checked><span class="sms-player-name">#${esc(p.num)} ${esc(p.name)}</span><span class="sms-player-pts">${ptsOf(t)}pts</span></div>`;}).join("");
+  qsa(".sms-check").forEach(ch=>ch.addEventListener("change",updateSmsPreview));
+  updateSmsPreview();
+  byId("dlgSmsBlast").showModal();
+}
+function updateSmsPreview(){
+  const home=byId("homeTeam").value||"HOME",away=byId("awayTeam").value||"AWAY",date=byId("gameDate").value||today();
+  const checked=qsa(".sms-check:checked").map(ch=>+ch.dataset.pid);
+  const lines=state.players.filter(p=>checked.includes(p.id)).map(p=>{const t=totalPlayer(p);return`#${p.num} ${p.name}: ${ptsOf(t)}pts ${t.reb}reb ${t.ast}ast`;});
+  byId("smsPreview").textContent=`CourtIQ Game Report\n${home} vs ${away} · ${date}\n\n${lines.join("\n")}\n\ntwiileez.github.io/CourtIQ`;
+}
+function doSmsBlast(){
+  const checked=qsa(".sms-check:checked").map(ch=>+ch.dataset.pid);
+  const targets=state.players.filter(p=>checked.includes(p.id)&&p.phone);
+  if(!targets.length){showToast("No players selected with phone numbers.");return;}
+  const msg=byId("smsPreview").textContent;
+  if(/Android|iPhone|iPad/i.test(navigator.userAgent)){const nums=targets.map(p=>p.phone.replace(/\D/g,"")).join(",");window.location.href=`sms:${nums}?body=${encodeURIComponent(msg)}`;}
+  else{navigator.clipboard.writeText(msg).then(()=>showToast(`📋 Blast copied for ${targets.length} player(s)`));}
+  byId("dlgSmsBlast").close();
+}
 // ═══════════════════════════════════════════════
 // SHARE
 // ═══════════════════════════════════════════════
@@ -963,7 +1171,7 @@ function seedDefaults(){
 function wire(){
   // Mode / quarter / shot type
   qsa("#modeTabs .seg").forEach(b=>b.addEventListener("click",()=>{state.mode=b.dataset.mode;rerender();}));
-  qsa("#quarterTabs .qbtn").forEach(b=>b.addEventListener("click",()=>{state.quarter=b.dataset.q==="OT"?"OT":+b.dataset.q;rerender();}));
+  qsa("#quarterTabs .qbtn").forEach(b=>b.addEventListener("click",()=>{state.quarter=b.dataset.q==="OT"?"OT":+b.dataset.q;vibrate(50);rerender();}));
   qsa(".pill[data-shot]").forEach(b=>b.addEventListener("click",()=>{state.shotMode=b.dataset.shot;rerender();}));
 
   // Header
@@ -984,6 +1192,10 @@ function wire(){
   byId("undoBtnM").addEventListener("click",undoAction);
   byId("shareBtnM").addEventListener("click",openShare);
   byId("upgradeBtnM").addEventListener("click",openUpgrade);
+
+  byId("smsBlastBtn")?.addEventListener("click",openSmsBlast);
+  byId("smsSendBtn")?.addEventListener("click",doSmsBlast);
+  byId("closeSmsBlastBtn")?.addEventListener("click",()=>byId("dlgSmsBlast").close());
 
   // Report dialog
   byId("printReportBtn").addEventListener("click",()=>window.print());
@@ -1018,16 +1230,47 @@ function wire(){
     byId("dlgUpgrade").close(); updateProBadge(); showToast("⭐ Pro demo activated!");
   });
 
+
+  // Opponent stats
+  byId("oppPtsUp")?.addEventListener("click",()=>{state.opp.pts++;persist();renderOppStats()});
+  byId("oppPtsDn")?.addEventListener("click",()=>{state.opp.pts=Math.max(0,state.opp.pts-1);persist();renderOppStats()});
+  byId("oppRebUp")?.addEventListener("click",()=>{state.opp.reb++;persist();renderOppStats()});
+  byId("oppRebDn")?.addEventListener("click",()=>{state.opp.reb=Math.max(0,state.opp.reb-1);persist();renderOppStats()});
+  byId("oppFoulUp")?.addEventListener("click",()=>{state.opp.fouls++;persist();renderOppStats()});
+  byId("oppFoulDn")?.addEventListener("click",()=>{state.opp.fouls=Math.max(0,state.opp.fouls-1);persist();renderOppStats()});
+
   // Shot chart
   byId("court").addEventListener("click",onCourtClick);
   byId("court").addEventListener("touchend",e=>{e.preventDefault();onCourtClick(e);},{passive:false});
   byId("shotPlayer").addEventListener("change",()=>rerender());
 
+
+  // Rec mode toggle
+  byId("recModeToggle")?.addEventListener("change",e=>{state.recMode=e.target.checked;showToast(state.recMode?"Rec Mode on — simple stats":"Rec Mode off — full stats");rerender()});
+  // Clear rotation
+  byId("clearRotBtn")?.addEventListener("click",()=>{state.rotation=[null,null,null,null,null];persist();renderRotation()});
+
   // Meta
   ["homeTeam","awayTeam","gameDate"].forEach(id=>byId(id).addEventListener("input",persist));
 
+
+  // PWA install prompt
+  let deferredInstall=null;
+  window.addEventListener("beforeinstallprompt",e=>{
+    e.preventDefault();deferredInstall=e;
+    if(!localStorage.getItem("ciq_install_dismissed"))byId("installBanner").classList.add("show");
+  });
+  byId("installBtn")?.addEventListener("click",async()=>{
+    if(!deferredInstall)return;
+    deferredInstall.prompt();await deferredInstall.userChoice;
+    deferredInstall=null;byId("installBanner").classList.remove("show");showToast("CourtIQ added to home screen! 🏀");
+  });
+  byId("installDismiss")?.addEventListener("click",()=>{
+    localStorage.setItem("ciq_install_dismissed","1");byId("installBanner").classList.remove("show");
+  });
+
   // Backdrop-click closes dialogs
-  ["dlgShare","dlgUpgrade","dlgReport","dlgWelcome"].forEach(id=>{
+  ["dlgShare","dlgUpgrade","dlgReport","dlgWelcome","dlgSmsBlast"].forEach(id=>{
     byId(id).addEventListener("click",e=>{if(e.target===byId(id))byId(id).close();});
   });
 
